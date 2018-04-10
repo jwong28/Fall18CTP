@@ -40,15 +40,19 @@ var config = {
         this.load.image('star', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('dude', 
-            'assets/dude.png',
-            { frameWidth: 32, frameHeight: 48 }
+            'assets/stickman.png',
+            { frameWidth: 32, frameHeight: 50 }
         );
         this.load.image('bullet', 'assets/bullet.png');
     }
 
     //platforms for movement and ground
     var platforms;
-    var direction;
+    var direction = "right";
+
+
+
+//REDUCE SHOOTING TO ONE FRAME
 
 
 
@@ -73,26 +77,52 @@ var config = {
         //Player collision with platform
         this.physics.add.collider(player, platforms);
 
+        //Create animations
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('dude', { start: 10, end: 21 }),
             frameRate: 10,
             repeat: -1
-        });
-
-        this.anims.create({
-            key: 'turn',
-            frames: [ { key: 'dude', frame: 4 } ],
-            frameRate: 20
         });
 
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 9 }),
             frameRate: 10,
             repeat: -1
         });
+
+        this.anims.create({
+            key: 'faceLeft',
+            // frames: [ { key: 'dude', frame: 0 } ],
+            frames: [{key: 'dude', frame: 10}],
+            frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'faceRight',
+            // frames: [ { key: 'dude', frame: 0 } ],
+            frames: [{key: 'dude', frame: 0}],
+            frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'shootLeft',
+            // frames: this.anims.generateFrameNumbers('dude', { start: 27, end: 31 }),
+            frames: [{key: 'dude', frame: 29}],
+            frameRate: 10,
+            // repeat: -1
+        });
         
+        this.anims.create({
+            key: 'shootRight',
+            // frames: this.anims.generateFrameNumbers('dude', { start: 22, end: 26 }),
+            frames: [{key: 'dude', frame: 24}],
+            frameRate: 10,
+            // repeat: -1
+        });
+
+
         //Score creation
         var score = 0;
         var scoreText;
@@ -193,6 +223,30 @@ var config = {
     function update ()
     {
         //Update keyboard input
+         //set shooting function
+        if(cursors.space._justUp)
+        //Just up is used if the button is pressed, hence just popped up
+        {
+            // isShooting === true;
+            var velX = 200;
+            if(direction=== "left")
+            {
+                velX = -200;
+                player.anims.play('shootLeft');
+            }
+            else if(direction === "right")
+            {
+                velX = 200;
+                player.anims.play('shootRight');
+
+
+            }
+            var bullet = bullets.create(player.x,player.y, 'bullet');
+
+            bullet.setVelocity(velX,0);
+            cursors.space._justUp = false;
+        }
+        
         if (cursors.left.isDown)
         {
             player.setVelocityX(-160);
@@ -206,11 +260,31 @@ var config = {
             player.anims.play('right', true);
             direction = "right";
         }
+        else if(cursors.space.isDown)
+        {
+            player.setVelocityX(0);
+            if(direction=== "left")
+            {
+                player.anims.play('shootLeft');
+            }
+            else if(direction === "right")
+            {
+                player.anims.play('shootRight');
+
+
+            } 
+        }
         else
         {
             player.setVelocityX(0);
-
-            player.anims.play('turn');
+            if(direction === "left")
+            {
+                player.anims.play('faceLeft');
+            }
+            else if(direction === "right")
+            {
+                player.anims.play('faceRight');
+            }            
         }
 
         if (cursors.up.isDown && player.body.touching.down)
@@ -228,23 +302,7 @@ var config = {
             gameOver = false;
         }
         
-        //set shooting function
-        if(cursors.space._justUp)
-        //Just up is used if the button is pressed, hence just popped up
-        {
-            var velX = 200;
-            if(direction=== "left")
-            {
-                velX = -200;
-            }
-            else if(direction === "right")
-            {
-                velX = 200;
-            }
-            var bullet = bullets.create(player.x,player.y, 'bullet');
-            bullet.setVelocity(velX,0);
-            cursors.space._justUp = false;
-        }
+       
     }
 
 </script>

@@ -1,0 +1,5 @@
+- 3/21/2018: Hello Phaser has been uploaded. For the future, a basic version of my game will be added onto this repo.
+- 3/26/2018: First Phaser game is added. Adapted from the Phaser 3 tutorial.
+- 4/102018: Stickdom first commit. Copied first phaser game
+	-Sprites updated, basic scenes added.
+	-README updated, CHANGELOG implemented.
