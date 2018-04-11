@@ -3,3 +3,5 @@
 - 4/102018: Stickdom first commit. Copied first phaser game
 	-Sprites updated, basic scenes added.
 	-README updated, CHANGELOG implemented.
+	-Scenes fixed and completed (index.html, game.js,level1.js)
+	-Bullet image updated to arrow and position fired

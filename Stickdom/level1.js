@@ -24,7 +24,6 @@ class level1 extends Phaser.Scene
 
     create ()
     {
-        console.log("create");
         var platforms;
         //direction facing
         var direction = "right";
@@ -205,23 +204,8 @@ class level1 extends Phaser.Scene
 
     update (delta)
     {
-        //Moving left
-        if (this.key_Left.isDown)
-        {  
-            this.player.setVelocityX(-160);
-            this.player.anims.play('left', true);
-            this.direction = "left";
-        }
-        //Moving right
-        else if (this.key_Right.isDown)
-        {
-            this.player.setVelocityX(160);
-
-            this.player.anims.play('right', true);
-            this.direction = "right";
-        }
         //Holding an arrow
-        else if(this.key_Space.isDown)
+        if(this.key_Space.isDown)
         {
             this.player.setVelocityX(0);
             if(this.direction=== "left")
@@ -235,28 +219,8 @@ class level1 extends Phaser.Scene
 
             } 
         }
-        //Not moving
-        else
-        {
-            this.player.setVelocityX(0);
-            if(this.direction === "left")
-            {
-                this.player.anims.play('faceLeft');
-            }
-            else if(this.direction === "right")
-            {
-                this.player.anims.play('faceRight');
-            }            
-        }
-
-        //Jump 
-        if (this.key_Up.isDown && this.player.body.touching.down)
-        {
-            this.player.setVelocityY(-325);
-        }
-
         //set shooting function
-        if(this.key_Space._justUp)
+        else if(this.key_Space._justUp)
         //Just up is used if the button is pressed, hence just popped up
         {
             // isShooting === true;
@@ -275,19 +239,52 @@ class level1 extends Phaser.Scene
             }
             if(this.bulletNum == 1)
             {
-                this.bulletOne = this.bullets.create(this.player.x,this.player.y, 'bullet');
+                this.bulletOne = this.bullets.create(this.player.x+5,this.player.y-5, 'bullet');
                 this.bulletOne.setVelocity(velX,0);
                 this.bulletNum = 2;
-                console.log(this.bulletNum)
             }
             else if(this.bulletNum == 2)
             {
-                this.bulletTwo = this.bullets.create(this.player.x,this.player.y, 'bullet');
+                this.bulletTwo = this.bullets.create(this.player.x+5,this.player.y-4, 'bullet');
                 this.bulletTwo.setVelocity(velX,0);
                 this.bulletNum = 1;
-                console.log(this.bulletNum)
             }
             this.key_Space._justUp = false;
+        }
+        //Moving left
+        else if (this.key_Left.isDown)
+        {  
+            this.player.setVelocityX(-160);
+            this.player.anims.play('left', true);
+            this.direction = "left";
+        }
+        //Moving right
+        else if (this.key_Right.isDown)
+        {
+            this.player.setVelocityX(160);
+
+            this.player.anims.play('right', true);
+            this.direction = "right";
+        }
+        //Not moving
+        else
+        {
+            this.player.setVelocityX(0);
+            if(this.direction === "left")
+            {
+                this.player.anims.play('faceLeft');
+            }
+            else if(this.direction === "right")
+            {
+                this.player.anims.play('faceRight');
+            }            
+        }
+        
+
+        //Jump 
+        if (this.key_Up.isDown && this.player.body.touching.down)
+        {
+            this.player.setVelocityY(-325);
         }
 
         //RESET DEBUGGING USE ONLY
