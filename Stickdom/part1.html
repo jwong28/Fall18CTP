@@ -108,18 +108,18 @@ var config = {
 
         this.anims.create({
             key: 'shootLeft',
-            // frames: this.anims.generateFrameNumbers('dude', { start: 27, end: 31 }),
+            // frames: this.anims.generateFrameNumbers('dude', { start: 27, end: 29 }),
             frames: [{key: 'dude', frame: 29}],
             frameRate: 10,
-            // repeat: -1
+            // repeat: 0
         });
         
         this.anims.create({
             key: 'shootRight',
-            // frames: this.anims.generateFrameNumbers('dude', { start: 22, end: 26 }),
+            // frames: this.anims.generateFrameNumbers('dude', { start: 22, end: 24 }),
             frames: [{key: 'dude', frame: 24}],
             frameRate: 10,
-            // repeat: -1
+            // repeat: 0
         });
 
 
@@ -221,7 +221,7 @@ var config = {
     }
 
     function update ()
-    {
+    {   
         //Update keyboard input
          //set shooting function
         if(cursors.space._justUp)
