@@ -1,7 +1,13 @@
 - 3/21/2018: Hello Phaser has been uploaded. For the future, a basic version of my game will be added onto this repo.
 - 3/26/2018: First Phaser game is added. Adapted from the Phaser 3 tutorial.
-- 4/102018: Stickdom first commit. Copied first phaser game
-	-Sprites updated, basic scenes added.
-	-README updated, CHANGELOG implemented.
-	-Scenes fixed and completed (index.html, game.js,level1.js)
-	-Bullet image updated to arrow and position fired
+- 4/10/2018: Stickdom first commit. Copied first phaser game
+	- Sprites updated, basic scenes added.
+	- README updated, CHANGELOG implemented.
+	- Scenes fixed and completed (index.html, game.js,level1.js)
+	- Bullet image updated to arrow and position fired
+- 4/16/2018: ChangeLog Updated
+	- Part1.html removed since its basically a duplicate file
+	- CDN implemented for phaser.js
+	- Phaser.js removed
+	- Phaser.min.js removed
+	- Fixed bad indentation
