@@ -18,12 +18,19 @@ class level1 extends Phaser.Scene
             { frameWidth: 32, frameHeight: 50 }
         );
         this.load.image('bullet', 'assets/bullet.png');
+        this.load.image('background', 'assets/basicBack.png');
     }
 
    
 
     create ()
     {
+        //Adding large background
+        this.add.image(1600,300,'background');
+
+        //Setting world bounds
+        this.physics.world.bounds.width = 3200;
+
         var platforms;
         //direction facing
         var direction = "right";
@@ -31,12 +38,14 @@ class level1 extends Phaser.Scene
         //bullet number
         var bulletNum=0;
         this.bulletNum=1;        
-
-        this.add.image(400, 300, 'sky');
+        
          //Create platforms
          platforms = this.physics.add.staticGroup();
 
          platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+         platforms.create(1200, 568, 'ground').setScale(2).refreshBody();
+         platforms.create(2000, 568, 'ground').setScale(2).refreshBody();
+         platforms.create(2800, 568, 'ground').setScale(2).refreshBody();
          platforms.create(600, 400, 'ground');
          platforms.create(50, 250, 'ground');
          platforms.create(750, 220, 'ground');
@@ -45,7 +54,12 @@ class level1 extends Phaser.Scene
          this.player = this.physics.add.sprite(100, 450, 'player');
          this.player.setBounce(0.2);
          this.player.setCollideWorldBounds(true);
-         this.player.body.setGravityY(300)
+        // this.player.setCollideWorldBounds(false);
+        this.player.body.setGravityY(300)
+
+         //Camera
+         this.cameras.main.setBounds(0,0,3200,600);
+         this.cameras.main.startFollow(this.player);
  
          //Player collision with platform
          this.physics.add.collider(this.player, platforms);
