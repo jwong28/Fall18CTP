@@ -27,43 +27,49 @@ class level1 extends Phaser.Scene
     {
         //Adding large background
         this.add.image(1600,300,'background');
-
         //Setting world bounds
         this.physics.world.bounds.width = 3200;
-
-        var platforms;
-        //direction facing
-        var direction = "right";
-        direction = "left";
-        //bullet number
+        
+        //bullet number for bullet checking
         var bulletNum=0;
         this.bulletNum=1;        
         
-         //Create platforms
-         platforms = this.physics.add.staticGroup();
+        //Creating keyboard input
+        var cursors = this.input.keyboard.createCursorKeys();
+        //Keycodes
+        this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.key_Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        this.key_Up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        this.key_Space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-         platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-         platforms.create(1200, 568, 'ground').setScale(2).refreshBody();
-         platforms.create(2000, 568, 'ground').setScale(2).refreshBody();
-         platforms.create(2800, 568, 'ground').setScale(2).refreshBody();
-         platforms.create(600, 400, 'ground');
-         platforms.create(50, 250, 'ground');
-         platforms.create(750, 220, 'ground');
-         
-         //Player creation
-         this.player = this.physics.add.sprite(100, 450, 'player');
-         this.player.setBounce(0.2);
-         this.player.setCollideWorldBounds(true);
-        // this.player.setCollideWorldBounds(false);
-        this.player.body.setGravityY(300)
+        //Create platforms
+        var platforms;
+        platforms = this.physics.add.staticGroup();
+        platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+        platforms.create(1200, 568, 'ground').setScale(2).refreshBody();
+        platforms.create(2000, 568, 'ground').setScale(2).refreshBody();
+        platforms.create(2800, 568, 'ground').setScale(2).refreshBody();
+        platforms.create(600, 400, 'ground');
+        platforms.create(50, 300, 'ground');
+        platforms.create(750, 220, 'ground');
 
          //Camera
          this.cameras.main.setBounds(0,0,3200,600);
-         this.cameras.main.startFollow(this.player);
+        
+        //Player creation
+        this.player = this.physics.add.sprite(100, 450, 'player');
+        this.player.setBounce(0.2);
+        this.player.setCollideWorldBounds(true);
+        // this.player.setCollideWorldBounds(false);
+        this.player.body.setGravityY(300) 
+        //direction player facing
+        var direction = "right";
+        direction = "left";
+        //Player collision with platform
+        this.physics.add.collider(this.player, platforms);
+        //Camera follows player
+        this.cameras.main.startFollow(this.player); 
  
-         //Player collision with platform
-         this.physics.add.collider(this.player, platforms);
-
          //Create animations
         this.anims.create({
             key: 'left',
@@ -81,44 +87,33 @@ class level1 extends Phaser.Scene
 
         this.anims.create({
             key: 'faceLeft',
-            // frames: [ { key: 'player', frame: 0 } ],
             frames: [{key: 'player', frame: 10}],
             frameRate: 20
         });
 
         this.anims.create({
             key: 'faceRight',
-            // frames: [ { key: 'player', frame: 0 } ],
             frames: [{key: 'player', frame: 0}],
             frameRate: 20
         });
 
         this.anims.create({
             key: 'shootLeft',
-            // frames: this.anims.generateFrameNumbers('player', { start: 27, end: 29 }),
             frames: [{key: 'player', frame: 29}],
             frameRate: 10,
-            // repeat: 0
         });
         
         this.anims.create({
             key: 'shootRight',
-            // frames: this.anims.generateFrameNumbers('player', { start: 22, end: 24 }),
             frames: [{key: 'player', frame: 24}],
             frameRate: 10,
-            // repeat: 0
         });
-
 
         //Score creation
         var score = 0;
         var scoreText;
         
         scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-
-        //Creating keyboard input
-        var cursors = this.input.keyboard.createCursorKeys();
-
         
         //adding enemies
         var bombs = this.physics.add.group({
@@ -207,12 +202,6 @@ class level1 extends Phaser.Scene
         {
             bullet.disableBody(true,true);
         }
-
-        //Keycodes
-        this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.key_Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-        this.key_Up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.key_Space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     }
 

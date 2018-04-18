@@ -11,3 +11,4 @@
 	- Phaser.js removed
 	- Phaser.min.js removed
 	- Fixed bad indentation
+- 4/18/2018: Basic enemy class added
