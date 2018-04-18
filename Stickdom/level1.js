@@ -243,13 +243,15 @@ class level1 extends Phaser.Scene
             if(this.bulletNum == 1)
             {
                 this.bulletOne = this.bullets.create(this.player.x+5,this.player.y-5, 'bullet');
-                this.bulletOne.setVelocity(velX,0);
+                this.bulletOne.setVelocity(velX,-25);
+                this.bulletOne.setGravityY(35);
                 this.bulletNum = 2;
             }
             else if(this.bulletNum == 2)
             {
                 this.bulletTwo = this.bullets.create(this.player.x+5,this.player.y-4, 'bullet');
-                this.bulletTwo.setVelocity(velX,0);
+                this.bulletTwo.setVelocity(velX,-25);
+                this.bulletTwo.setGravityY(35);
                 this.bulletNum = 1;
             }
             this.key_Space._justUp = false;
