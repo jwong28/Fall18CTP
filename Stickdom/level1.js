@@ -43,7 +43,6 @@ class level1 extends Phaser.Scene
         
         //Starting gameplay with enter
         this.physics.pause();
-        console.log(this);
         var startText = this.add.text(200,450,'Press Enter to start the game',{ fontSize: '32px', fill: '#000' })
         this.input.keyboard.on('keyup_ENTER', function(event)
         {
