@@ -13,3 +13,4 @@
 	- Fixed bad indentation
 - 4/18/2018: Basic enemy class added
 	- Arrows have gravity effect
+- 4/20/2018: Game starts on Enter
