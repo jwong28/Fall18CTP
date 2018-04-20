@@ -17,6 +17,7 @@ class level1 extends Phaser.Scene
             'assets/stickman.png',
             { frameWidth: 32, frameHeight: 50 }
         );
+        this.load.image('heart', 'assets/heart.png');
         this.load.image('bullet', 'assets/bullet.png');
         this.load.image('background', 'assets/basicBack.png');
     }
@@ -34,13 +35,12 @@ class level1 extends Phaser.Scene
         var bulletNum=0;
         this.bulletNum=1;        
         
-        //Creating keyboard input
-        var cursors = this.input.keyboard.createCursorKeys();
         //Keycodes
         this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.key_Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.key_Up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.key_Space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.key_Enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         //Create platforms
         var platforms;
@@ -108,7 +108,9 @@ class level1 extends Phaser.Scene
             frames: [{key: 'player', frame: 24}],
             frameRate: 10,
         });
-        
+        //Healthbar
+        this.healthBar = this.physics.add.group();
+
         //adding enemies
         var bombs = this.physics.add.group({
             gravityY: 300,
@@ -167,6 +169,12 @@ class level1 extends Phaser.Scene
 
             }
         }
+        
+        //add bullets group
+        this.bullets = this.physics.add.group();
+        this.physics.add.collider(this.bullets, bombs, bulletHit, null, this);
+        this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
+        this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
 
         //If bullet hit disable
         function bulletHit (bullet, bomb)
@@ -181,14 +189,6 @@ class level1 extends Phaser.Scene
             this.bulletTwo.disableBody(true,true);
 
         }
-        
-        //add bullets group
-        this.bullets = this.physics.add.group();
-        this.physics.add.collider(this.bullets, bombs, bulletHit, null, this);
-        this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
-        this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
-        
-        
         function bulletBounds (bullet, platforms)
         {
             bullet.disableBody(true,true);
@@ -198,10 +198,19 @@ class level1 extends Phaser.Scene
 
     update (delta)
     {
+         //Load healthbar along with game start
+         if(this.key_Enter._justUp)
+         {
+             this.health = this.healthBar.create(16,16,'heart');
+             this.health.setCollideWorldBounds(true);
+             this.key_Enter._justUp = false;
+         }
+
         //Holding an arrow
         if(this.key_Space.isDown)
         {
             this.player.setVelocityX(0);
+            this.healthBar.setVelocityX(0);
             if(this.direction=== "left")
             {
                 this.player.anims.play('shootLeft');
@@ -245,7 +254,6 @@ class level1 extends Phaser.Scene
                 this.bulletTwo.setGravityY(35);
                 this.bulletNum = 1;
             }
-            console.log(this.player.x);
             this.key_Space._justUp = false;
         }
         //Moving left
@@ -254,6 +262,10 @@ class level1 extends Phaser.Scene
             this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
             this.direction = "left";
+            if(this.player.x>=395)
+            {
+                this.healthBar.setVelocityX(-160);
+            }
         }
         //Moving right
         else if (this.key_Right.isDown)
@@ -262,11 +274,16 @@ class level1 extends Phaser.Scene
 
             this.player.anims.play('right', true);
             this.direction = "right";
+            if(this.player.x>=395)
+            {
+                this.healthBar.setVelocityX(160);
+            }
         }
         //Not moving
         else
         {
             this.player.setVelocityX(0);
+            this.healthBar.setVelocityX(0);
             if(this.direction === "left")
             {
                 this.player.anims.play('faceLeft');
@@ -274,7 +291,7 @@ class level1 extends Phaser.Scene
             else if(this.direction === "right")
             {
                 this.player.anims.play('faceRight');
-            }            
+            } 
         }
         
 
@@ -295,4 +312,5 @@ class level1 extends Phaser.Scene
         }
 
     }
+    
 }
