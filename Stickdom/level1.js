@@ -34,13 +34,21 @@ class level1 extends Phaser.Scene
         var bulletNum=0;
         this.bulletNum=1;        
         
-        //Creating keyboard input
-        var cursors = this.input.keyboard.createCursorKeys();
         //Keycodes
         this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.key_Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.key_Up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.key_Space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.key_Enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        
+        //Starting gameplay with enter
+        this.physics.pause();
+        var startText = this.add.text(200,450,'Press Enter to start the game',{ fontSize: '32px', fill: '#000' })
+        this.input.keyboard.on('keyup_ENTER', function(event)
+        {
+            startText.setText("");
+            this.physics.resume();
+        },this);
 
         //Create platforms
         var platforms;
@@ -60,16 +68,15 @@ class level1 extends Phaser.Scene
         this.player = this.physics.add.sprite(100, 450, 'player');
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
-        // this.player.setCollideWorldBounds(false);
         this.player.body.setGravityY(300) 
         //direction player facing
-        var direction = "right";
+        var direction;
         direction = "left";
         //Player collision with platform
         this.physics.add.collider(this.player, platforms);
         //Camera follows player
         this.cameras.main.startFollow(this.player); 
- 
+
          //Create animations
         this.anims.create({
             key: 'left',
@@ -108,12 +115,6 @@ class level1 extends Phaser.Scene
             frames: [{key: 'player', frame: 24}],
             frameRate: 10,
         });
-
-        //Score creation
-        var score = 0;
-        var scoreText;
-        
-        scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
         
         //adding enemies
         var bombs = this.physics.add.group({
@@ -155,9 +156,6 @@ class level1 extends Phaser.Scene
         function collectStar (player, star)
         {
             star.disableBody(true, true);
-
-            score += 10;
-            scoreText.setText('Score: ' + score);
 
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
             var bomb = bombs.create(x, 16, 'bomb');
@@ -220,13 +218,12 @@ class level1 extends Phaser.Scene
                 this.player.anims.play('shootRight');
 
 
-            } 
+            }  
         }
         //set shooting function
         else if(this.key_Space._justUp)
         //Just up is used if the button is pressed, hence just popped up
         {
-            // isShooting === true;
             var velX = 200;
             if(this.direction=== "left")
             {
@@ -301,5 +298,6 @@ class level1 extends Phaser.Scene
             this.player.anims.play('turn');
             this.gameOver = false;
         }
-    }
+
+    }  
 }
