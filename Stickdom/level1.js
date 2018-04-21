@@ -44,6 +44,18 @@ class level1 extends Phaser.Scene
         this.key_Up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.key_Space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.key_Enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+<<<<<<< HEAD
+=======
+        
+        //Starting gameplay with enter
+        this.physics.pause();
+        var startText = this.add.text(200,450,'Press Enter to start the game',{ fontSize: '32px', fill: '#000' })
+        this.input.keyboard.on('keyup_ENTER', function(event)
+        {
+            startText.setText("");
+            this.physics.resume();
+        },this);
+>>>>>>> 190864f5c08596939d110b8bea337c231ffec6c4
 
         //Create platforms
         var platforms;
@@ -73,7 +85,11 @@ class level1 extends Phaser.Scene
         //Camera follows player
         this.cameras.main.startFollow(this.player); 
 
+<<<<<<< HEAD
         //Create animations
+=======
+         //Create animations
+>>>>>>> 190864f5c08596939d110b8bea337c231ffec6c4
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 10, end: 21 }),
@@ -248,13 +264,18 @@ class level1 extends Phaser.Scene
             else if(this.direction === "right")
             {
                 this.player.anims.play('shootRight');
+<<<<<<< HEAD
             } 
+=======
+
+
+            }  
+>>>>>>> 190864f5c08596939d110b8bea337c231ffec6c4
         }
         //set shooting function
         else if(this.key_Space._justUp)
         //Just up is used if the button is pressed, hence just popped up
         {
-            // isShooting === true;
             var velX = 200;
             if(this.direction=== "left")
             {
@@ -357,6 +378,11 @@ class level1 extends Phaser.Scene
             this.healthBar.anims.play('heartsThree');
             this.key_R._justUp = false;
         }
+<<<<<<< HEAD
     }
     
+=======
+
+    }  
+>>>>>>> 190864f5c08596939d110b8bea337c231ffec6c4
 }
