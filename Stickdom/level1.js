@@ -3,7 +3,6 @@ class level1 extends Phaser.Scene
     constructor()
     {
         super({key: "level1"});
-         //Global variables
     }
 
     preload ()
@@ -132,6 +131,12 @@ class level1 extends Phaser.Scene
             frameRate: 10,
         });
 
+        this.anims.create({
+            key: 'heartsZero',
+            frames: [{key: 'healthBar', frame: 3}],
+            frameRate: 10,
+        });
+
         //Healthbar
         this.health = this.physics.add.group();
         this.healthBar = this.health.create(40,16,'blank');
@@ -140,6 +145,9 @@ class level1 extends Phaser.Scene
         //Collider so healthbar doesn't go off screen
         this.physics.add.collider(this.healthBar, platforms);
         platforms.create(16,16,'blank');
+        //Health count
+        var healthCount = 3;
+        this.healthCount = 3;
 
         //adding enemies
         var bombs = this.physics.add.group({
@@ -148,14 +156,14 @@ class level1 extends Phaser.Scene
         this.physics.add.collider(bombs, platforms);
         this.physics.add.collider(this.player, bombs, hitBomb, null, this);
 
-        //hit bomb FUNCTION!!!!!!
+        //Player hits bomb
         function hitBomb (player, bomb)
         {
-            this.physics.pause();
-            player.setTint(0xff0000);
-            this.healthBar.anims.play('heartsTwo');
+            // this.physics.pause();
             player.anims.play('turn');
-            this.gameOver = true;
+            this.healthCount--;
+            bomb.disableBody(true, true);
+            console.log(this.healthCount);
         }
 
         //Creating group of stars
@@ -169,7 +177,6 @@ class level1 extends Phaser.Scene
         stars.children.iterate(function (child) {
 
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
         });
         
         //Check star collision with ground
@@ -233,7 +240,7 @@ class level1 extends Phaser.Scene
         if(this.key_Space.isDown)
         {
             this.player.setVelocityX(0);
-            this.health.setVelocityX(0);
+            this.healthBar.setVelocityX(0);
             if(this.direction=== "left")
             {
                 this.player.anims.play('shootLeft');
@@ -241,8 +248,6 @@ class level1 extends Phaser.Scene
             else if(this.direction === "right")
             {
                 this.player.anims.play('shootRight');
-
-
             } 
         }
         //set shooting function
@@ -278,6 +283,7 @@ class level1 extends Phaser.Scene
                 this.bulletNum = 1;
             }
             this.key_Space._justUp = false;
+            // console.log(this.healthCount);
         }
         //Moving left
         else if (this.key_Left.isDown)
@@ -323,14 +329,33 @@ class level1 extends Phaser.Scene
             this.player.setVelocityY(-325);
         }
 
+        //Different heart animations for different health
+        if(this.healthCount === 2)
+        {
+            this.healthBar.anims.play('heartsTwo');
+        }
+        else if (this.healthCount === 1)
+        {
+            this.healthBar.anims.play('heartsOne');
+        }
+        else if (this.healthCount === 0)
+        {
+            this.healthBar.anims.play('heartsZero');
+            this.gameOver = true;
+            this.physics.pause();
+        }
+
         //RESET DEBUGGING USE ONLY
         this.key_R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-        if (this.key_R.isDown)
+        if (this.key_R._justUp)
         {
             this.physics.resume();
             // this.player.setTint();
             this.player.anims.play('turn');
             this.gameOver = false;
+            this.healthCount = 3;
+            this.healthBar.anims.play('heartsThree');
+            this.key_R._justUp = false;
         }
     }
     
