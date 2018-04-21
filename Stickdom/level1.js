@@ -17,9 +17,13 @@ class level1 extends Phaser.Scene
             'assets/stickman.png',
             { frameWidth: 32, frameHeight: 50 }
         );
-        this.load.image('heart', 'assets/heart.png');
         this.load.image('bullet', 'assets/bullet.png');
         this.load.image('background', 'assets/basicBack.png');
+        this.load.spritesheet('healthBar',
+            'assets/healthBar.png',
+            {frameWidth: 81, frameHeight: 22}
+        );
+        this.load.image('blank','assets/blankBox.png');
     }
 
    
@@ -52,9 +56,10 @@ class level1 extends Phaser.Scene
         platforms.create(600, 400, 'ground');
         platforms.create(50, 300, 'ground');
         platforms.create(750, 220, 'ground');
+        
 
-         //Camera
-         this.cameras.main.setBounds(0,0,3200,600);
+        //Camera
+        this.cameras.main.setBounds(0,0,3200,600);
         
         //Player creation
         this.player = this.physics.add.sprite(100, 450, 'player');
@@ -68,9 +73,8 @@ class level1 extends Phaser.Scene
         this.physics.add.collider(this.player, platforms);
         //Camera follows player
         this.cameras.main.startFollow(this.player); 
-        console.log(this.cameras.cameras[0]);
- 
-         //Create animations
+
+        //Create animations
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 10, end: 21 }),
@@ -108,8 +112,34 @@ class level1 extends Phaser.Scene
             frames: [{key: 'player', frame: 24}],
             frameRate: 10,
         });
+
+        //Health bar
+        this.anims.create({
+            key: 'heartsThree',
+            frames: [{key: 'healthBar', frame: 0}],
+            frameRate: 10,
+        });
+
+        this.anims.create({
+            key: 'heartsTwo',
+            frames: [{key: 'healthBar', frame: 1}],
+            frameRate: 10,
+        });
+
+        this.anims.create({
+            key: 'heartsOne',
+            frames: [{key: 'healthBar', frame: 2}],
+            frameRate: 10,
+        });
+
         //Healthbar
-        this.healthBar = this.physics.add.group();
+        this.health = this.physics.add.group();
+        this.healthBar = this.health.create(40,16,'blank');
+        this.healthBar.anims.play('heartsThree');
+        this.healthBar.setCollideWorldBounds(true);
+        //Collider so healthbar doesn't go off screen
+        this.physics.add.collider(this.healthBar, platforms);
+        platforms.create(16,16,'blank');
 
         //adding enemies
         var bombs = this.physics.add.group({
@@ -123,6 +153,7 @@ class level1 extends Phaser.Scene
         {
             this.physics.pause();
             player.setTint(0xff0000);
+            this.healthBar.anims.play('heartsTwo');
             player.anims.play('turn');
             this.gameOver = true;
         }
@@ -198,19 +229,11 @@ class level1 extends Phaser.Scene
 
     update (delta)
     {
-         //Load healthbar along with game start
-         if(this.key_Enter._justUp)
-         {
-             this.health = this.healthBar.create(16,16,'heart');
-             this.health.setCollideWorldBounds(true);
-             this.key_Enter._justUp = false;
-         }
-
         //Holding an arrow
         if(this.key_Space.isDown)
         {
             this.player.setVelocityX(0);
-            this.healthBar.setVelocityX(0);
+            this.health.setVelocityX(0);
             if(this.direction=== "left")
             {
                 this.player.anims.play('shootLeft');
@@ -274,7 +297,7 @@ class level1 extends Phaser.Scene
 
             this.player.anims.play('right', true);
             this.direction = "right";
-            if(this.player.x>=395)
+            if(this.player.x>=395 ) 
             {
                 this.healthBar.setVelocityX(160);
             }
@@ -293,7 +316,6 @@ class level1 extends Phaser.Scene
                 this.player.anims.play('faceRight');
             } 
         }
-        
 
         //Jump 
         if (this.key_Up.isDown && this.player.body.touching.down)
@@ -310,7 +332,6 @@ class level1 extends Phaser.Scene
             this.player.anims.play('turn');
             this.gameOver = false;
         }
-
     }
     
 }
