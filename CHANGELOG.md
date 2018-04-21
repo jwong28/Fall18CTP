@@ -12,3 +12,7 @@
 	- Phaser.min.js removed
 	- Fixed bad indentation
 - 4/18/2018: Basic enemy class added
+- 4/21/2018: Added in health bar sprite
+	- Basic health bar on top
+	- Created a blank box to make sure health doesn't go off platform
+	- Made health bar velocity based on player movement
