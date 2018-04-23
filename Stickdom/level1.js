@@ -158,6 +158,27 @@ class level1 extends Phaser.Scene
         var healthCount = 3;
         this.healthCount = 3;
 
+        //Adding charger enemy
+        var enemyCharger = this.physics.add.group(
+            {
+                health: 2,
+            }
+        );
+        console.log (enemyCharger);
+        this.physics.add.collider(this.bullets, enemyCharger, charged, null, this);
+
+        function charged (bullet, enemyCharger)
+        {
+            // this.physics.pause();
+            bomb.health--;
+            if(bomb.health ==0)
+            {
+                bomb.disableBody(true,true);
+            }
+        }
+
+
+
         //adding enemies
         var bombs = this.physics.add.group({
             gravityY: 300,
