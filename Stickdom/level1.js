@@ -159,25 +159,24 @@ class level1 extends Phaser.Scene
         this.healthCount = 3;
 
         //Adding charger enemy
-        var enemyCharger = this.physics.add.group(
-            {
-                health: 2,
-            }
-        );
-        console.log (enemyCharger);
-        this.physics.add.collider(this.bullets, enemyCharger, charged, null, this);
+        this.enemyChargers = this.physics.add.group();
+        // console.log (enemyCharger);
+        this.physics.add.collider(this.player, this.enemyChargers, chargerHitPlayer, null, this);
+        // var charger = enemyCharger.create(400,450, 'bomb');
+        // charger.health = 2;
+        // console.log(charger);
 
-        function charged (bullet, enemyCharger)
+        function chargerHitPlayer (player, enemyCharger)
         {
-            // this.physics.pause();
-            bomb.health--;
-            if(bomb.health ==0)
+            this.healthCount--;
+            player.setVelocityX(-500);  
+            enemyCharger.health--;
+            console.log(enemyCharger.health);
+            if(enemyCharger.health ===0)
             {
-                bomb.disableBody(true,true);
+                enemyCharger.disableBody(true,true);
             }
         }
-
-
 
         //adding enemies
         var bombs = this.physics.add.group({
@@ -189,7 +188,6 @@ class level1 extends Phaser.Scene
         //Player hits bomb
         function hitBomb (player, bomb)
         {
-            // this.physics.pause();
             player.anims.play('turn');
             this.healthCount--;
             bomb.disableBody(true, true);
@@ -209,8 +207,7 @@ class level1 extends Phaser.Scene
         });
         
         //Check star collision with ground
-        this.physics.add.collider(stars, platforms);
-        
+        this.physics.add.collider(stars, platforms);   
         //If player gets star
         this.physics.add.overlap(this.player, stars, collectStar, null, this);
         
@@ -225,7 +222,7 @@ class level1 extends Phaser.Scene
             bomb.setCollideWorldBounds(true);
             bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
             bomb.allowGravity = false;
-                
+
             if (stars.countActive(true) === 0)
             {
                 stars.children.iterate(function (child) {
@@ -372,6 +369,14 @@ class level1 extends Phaser.Scene
             this.gameOver = true;
             this.physics.pause();
         }
+
+        if((this.player.x)=== 400)
+        {
+            console.log(true);
+            this.enemyCharger = this.enemyChargers.create(this.player.x+100,450, 'bomb');
+            this.enemyCharger.health = 2;
+        }
+        
 
         //RESET DEBUGGING USE ONLY
         this.key_R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
