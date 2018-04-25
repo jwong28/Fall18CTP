@@ -11,7 +11,7 @@ class level1 extends Phaser.Scene
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
         this.load.image('star', 'assets/star.png');
-        this.load.image('bomb', 'assets/bomb.png');
+        this.load.image('fireball', 'assets/fireball.png');
         this.load.spritesheet('player', 
             'assets/stickman.png',
             { frameWidth: 32, frameHeight: 50 }
@@ -23,6 +23,10 @@ class level1 extends Phaser.Scene
             {frameWidth: 81, frameHeight: 22}
         );
         this.load.image('blank','assets/blankBox.png');
+        this.load.spritesheet('fireball', 
+        'assets/fireball.png',
+            {frameWidth: 17, frameHeight: 17}   
+        );
     }
 
    
@@ -146,6 +150,14 @@ class level1 extends Phaser.Scene
             frameRate: 10,
         });
 
+        //Fireball animation
+        this.anims.create({
+            key: 'fireballMovement',
+            frames: this.anims.generateFrameNumbers('fireball', { start: 0, end: 1 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
         //Healthbar
         this.health = this.physics.add.group();
         this.healthBar = this.health.create(40,16,'blank');
@@ -159,19 +171,19 @@ class level1 extends Phaser.Scene
         this.healthCount = 3;
 
         //adding enemies
-        var bombs = this.physics.add.group({
+        var fireballs = this.physics.add.group({
             gravityY: 300,
         });
-        this.physics.add.collider(bombs, platforms);
-        this.physics.add.collider(this.player, bombs, hitBomb, null, this);
+        this.physics.add.collider(fireballs, platforms);
+        this.physics.add.collider(this.player, fireballs, hitfireball, null, this);
 
-        //Player hits bomb
-        function hitBomb (player, bomb)
+        //Player hits fireball
+        function hitfireball (player, fireball)
         {
             // this.physics.pause();
             player.anims.play('turn');
             this.healthCount--;
-            bomb.disableBody(true, true);
+            fireball.disableBody(true, true);
         }
 
         //Creating group of stars
@@ -197,13 +209,14 @@ class level1 extends Phaser.Scene
         function collectStar (player, star)
         {
             star.disableBody(true, true);
-
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-            var bomb = bombs.create(x, 16, 'bomb');
-            bomb.setBounce(1);
-            bomb.setCollideWorldBounds(true);
-            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-            bomb.allowGravity = false;
+            var fireball = fireballs.create(x, 16, 'fireball');
+            // console.log(fireball);
+            fireball.anims.play('fireballMovement', true);
+            fireball.setBounce(1);
+            fireball.setCollideWorldBounds(true);
+            fireball.setVelocity(Phaser.Math.Between(-200, 200), 20);
+            fireball.allowGravity = false;
                 
             if (stars.countActive(true) === 0)
             {
@@ -218,15 +231,15 @@ class level1 extends Phaser.Scene
         
         //add bullets group
         this.bullets = this.physics.add.group();
-        this.physics.add.collider(this.bullets, bombs, bulletHit, null, this);
+        this.physics.add.collider(this.bullets, fireballs, bulletHit, null, this);
         this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
 
         //If bullet hit disable
-        function bulletHit (bullet, bomb)
+        function bulletHit (bullet, fireball)
         {
             bullet.disableBody(true,true);
-            bomb.disableBody(true,true);
+            fireball.disableBody(true,true);
         }
 
         //Delete a bullet when hitbox overlap
