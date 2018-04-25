@@ -162,20 +162,22 @@ class level1 extends Phaser.Scene
         this.enemyChargers = this.physics.add.group();
         // console.log (enemyCharger);
         this.physics.add.collider(this.player, this.enemyChargers, chargerHitPlayer, null, this);
-        // var charger = enemyCharger.create(400,450, 'bomb');
-        // charger.health = 2;
-        // console.log(charger);
 
         function chargerHitPlayer (player, enemyCharger)
         {
             this.healthCount--;
             player.setVelocityX(-500);  
-            enemyCharger.health--;
-            console.log(enemyCharger.health);
             if(enemyCharger.health ===0)
             {
                 enemyCharger.disableBody(true,true);
             }
+        }
+
+        //populating screen with charger
+        for(var i=500; i<3200;i+=600)
+        {
+            this.enemyCharger = this.enemyChargers.create(i,500, 'bomb');
+            this.enemyCharger.health = 2;
         }
 
         //adding enemies
@@ -239,6 +241,7 @@ class level1 extends Phaser.Scene
         this.physics.add.collider(this.bullets, bombs, bulletHit, null, this);
         this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
+        this.physics.add.collider(this.bullets, this.enemyChargers, bulletHitCharger, null, this);
 
         //If bullet hit disable
         function bulletHit (bullet, bomb)
@@ -254,6 +257,17 @@ class level1 extends Phaser.Scene
         }
         function bulletBounds (bullet, platforms)
         {
+            bullet.disableBody(true,true);
+        }
+
+        function bulletHitCharger (bullet, enemyCharger)
+        {
+            enemyCharger.health--;
+            if(enemyCharger.health === 0)
+            {
+                console.log(true);
+                enemyCharger.disableBody(true,true);
+            }
             bullet.disableBody(true,true);
         }
 
@@ -308,7 +322,6 @@ class level1 extends Phaser.Scene
                 this.bulletNum = 1;
             }
             this.key_Space._justUp = false;
-            // console.log(this.healthCount);
         }
         //Moving left
         else if (this.key_Left.isDown)
@@ -370,13 +383,11 @@ class level1 extends Phaser.Scene
             this.physics.pause();
         }
 
-        if((this.player.x)=== 400)
-        {
-            console.log(true);
-            this.enemyCharger = this.enemyChargers.create(this.player.x+100,450, 'bomb');
-            this.enemyCharger.health = 2;
-        }
-        
+        // if(this.player.x % 400 > 0 && this.player.x % 400 < 3)
+        // {
+        //     this.enemyCharger = this.enemyChargers.create(this.player.x+100,450, 'bomb');
+        //     this.enemyCharger.health = 2;
+        // }
 
         //RESET DEBUGGING USE ONLY
         this.key_R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
