@@ -25,7 +25,7 @@ class level1 extends Phaser.Scene
         this.load.image('blank','assets/blankBox.png');
         this.load.spritesheet('fireball', 
         'assets/fireball.png',
-            {frameWidth: 14, freameHeight: 14}   
+            {frameWidth: 17, frameHeight: 17}   
         );
     }
 
