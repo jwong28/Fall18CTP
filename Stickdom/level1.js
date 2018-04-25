@@ -176,7 +176,7 @@ class level1 extends Phaser.Scene
         //populating screen with charger
         for(var i=500; i<3200;i+=600)
         {
-            this.enemyCharger = this.enemyChargers.create(i,500, 'bomb');
+            this.enemyCharger = this.enemyChargers.create(i,500, 'dude');
             this.enemyCharger.health = 2;
         }
 
