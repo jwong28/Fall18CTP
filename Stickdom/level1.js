@@ -187,12 +187,9 @@ class level1 extends Phaser.Scene
         //Player hits fireball
         function hitfireball (player, fireball)
         {
-            console.log(fireball.destroyed);
             if(fireball.destroyed===0){
                 // player.anims.play('turn');
                 this.healthCount--;
-                console.log(this.healthCount);
-                console.log(fireball);
                 //Call destruction of fireball
                 fireball.anims.play('fireballDestroyed', true);
                 fireball.destroyed = 1;
@@ -331,7 +328,6 @@ class level1 extends Phaser.Scene
                 this.bulletNum = 1;
             }
             this.key_Space._justUp = false;
-            // console.log(this.healthCount);
         }
         //Moving left
         else if (this.key_Left.isDown)
