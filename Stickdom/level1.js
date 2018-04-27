@@ -273,12 +273,12 @@ class level1 extends Phaser.Scene
         {
             bullet.disableBody(true,true);
         }
+        //After a certain amount of time, fireball disappears
+        function onEvent(fireball)
+        {
+            fireball.disableBody(true, true);
 
-       function onEvent(fireball)
-    {
-        fireball.disableBody(true, true);
-
-    }
+        }
     }
 
     update (delta)
