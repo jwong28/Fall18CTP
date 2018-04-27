@@ -45,7 +45,8 @@ class level1 extends Phaser.Scene
         //bullet number for bullet checking
         var bulletNum=0;
         this.bulletNum=1;        
-        
+
+
         //Keycodes
         this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.key_Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
@@ -153,6 +154,12 @@ class level1 extends Phaser.Scene
             frameRate: 10,
             repeat: -1
         });
+        this.anims.create({
+            key: 'fireballDestroyed',
+            frames: this.anims.generateFrameNumbers('fireball', {start: 2, end: 6}),
+            frameRate: 20,
+            repeat: 0,
+        });
 
         //Enemy spearman animation
         this.anims.create({
@@ -253,9 +260,16 @@ class level1 extends Phaser.Scene
         //Player hits fireball
         function hitfireball (player, fireball)
         {
-            // player.anims.play('turn');
-            this.healthCount--;
-            fireball.disableBody(true, true);
+            if(fireball.destroyed===0){
+                // player.anims.play('turn');
+                this.healthCount--;
+                //Call destruction of fireball
+                fireball.anims.play('fireballDestroyed', true);
+                fireball.destroyed = 1;
+                //timer
+                var fireballTimedDestruction;
+                this.fireballTimedDestruction = this.time.delayedCall(200,onEvent,[fireball], this);
+            }
         }
 
         //Creating group of stars
@@ -282,6 +296,7 @@ class level1 extends Phaser.Scene
             star.disableBody(true, true);
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
             var fireball = fireballs.create(x, 16, 'fireball');
+            fireball.destroyed = 0;
             fireball.anims.play('fireballMovement', true);
             fireball.setBounce(1);
             fireball.setCollideWorldBounds(true);
@@ -310,7 +325,14 @@ class level1 extends Phaser.Scene
         function bulletHit (bullet, fireball)
         {
             bullet.disableBody(true,true);
-            fireball.disableBody(true,true);
+            if(fireball.destroyed===0){
+                //Call destruction of fireball
+                fireball.anims.play('fireballDestroyed', true);
+                fireball.destroyed = 1;
+                //timer
+                var fireballTimedDestruction;
+                this.fireballTimedDestruction = this.time.delayedCall(200,onEvent,[fireball], this);
+            }
         }
 
         //Delete a bullet when hitbox overlap
@@ -322,6 +344,11 @@ class level1 extends Phaser.Scene
         {
             bullet.disableBody(true,true);
         }
+        //After a certain amount of time, fireball disappears
+        function onEvent(fireball)
+        {
+            fireball.disableBody(true, true);
+        }
 
         function bulletHitSpearman (bullet, enemySpearman)
         {
@@ -332,7 +359,6 @@ class level1 extends Phaser.Scene
             }
             bullet.disableBody(true,true);
         }
-
     }
 
     update (delta)
