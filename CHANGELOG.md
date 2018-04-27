@@ -12,13 +12,17 @@
 	- Phaser.min.js removed
 	- Fixed bad indentation
 - 4/18/2018: Basic enemy class added
+- 4/20/2018: Game starts on Enter
 - 4/21/2018: Added in health bar sprite
 	- Basic health bar on top
-	- Created a blank box to make sure health doesn't go off platform
+	- Created a blank box to make sure health doesn't go off world
 	- Made health bar velocity based on player movement
 	- Arrows have gravity effect
-- 4/20/2018: Game starts on Enter
-- 4/21/2018: Bombs changed to fireball
+	- Bombs changed to fireball
 	- Fireball destruction animation added
 	- Added a basic enemyCharger class
 	- Stopped healthbar from scrolling over the screen
+- 4/26/2018: EnemyCharger class changed to spearman
+	- Spearman animations added
+	- Spearman paces back and forth from origin point
+	- Spearman colliders added
