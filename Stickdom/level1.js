@@ -290,7 +290,6 @@ class level1 extends Phaser.Scene
                 this.bulletNum = 1;
             }
             this.key_Space._justUp = false;
-            console.log(this.healthBar.x);
         }
         //Moving left
         else if (this.key_Left.isDown)
