@@ -203,7 +203,6 @@ class level1 extends Phaser.Scene
         this.healthCount = 3;
 
         //Adding spearman enemy
-        // var enemySpearmans = this.physics.add.group({
         this.enemySpearmans = this.physics.add.group({
             gravityY: 300,
         });
@@ -213,8 +212,6 @@ class level1 extends Phaser.Scene
         function spearmanHitPlayer (player, enemySpearman)
         {
             this.healthCount--;
-            // player.x -=10;
-            // player.setVelocityX(-10); 
             enemySpearman.anims.play('spearmanHitLeft',true); 
             if(enemySpearman.health ===0)
             {
@@ -231,7 +228,6 @@ class level1 extends Phaser.Scene
         function createSpearman(i, player,enemySpearmans)
         {
             var enemySpearman = enemySpearmans.create(i,500, 'spearman');
-            // this.enemySpearman.anims.play('spearmanHitLeft');
             enemySpearman.anims.play('spearmanLeft', true);
             enemySpearman.health = 2;
             enemySpearman.originXValue = i;
@@ -471,8 +467,7 @@ class level1 extends Phaser.Scene
             {
                 spearman.direction= "right";
                 spearman.anims.play('spearmanRight', true)
-            }
-                       
+            }               
         }
 
 
