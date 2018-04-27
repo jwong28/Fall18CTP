@@ -27,6 +27,10 @@ class level1 extends Phaser.Scene
         'assets/fireball.png',
             {frameWidth: 17, frameHeight: 17}   
         );
+        this.load.spritesheet('spearman', 
+        'assets/spearman.png',
+            {frameWidth: 32, frameHeight: 50}   
+        );
     }
 
    
@@ -93,32 +97,27 @@ class level1 extends Phaser.Scene
             frameRate: 10,
             repeat: -1
         });
-
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('player', { start: 0, end: 9 }),
             frameRate: 10,
             repeat: -1
         });
-
         this.anims.create({
             key: 'faceLeft',
             frames: [{key: 'player', frame: 10}],
             frameRate: 20
         });
-
         this.anims.create({
             key: 'faceRight',
             frames: [{key: 'player', frame: 0}],
             frameRate: 20
         });
-
         this.anims.create({
             key: 'shootLeft',
             frames: [{key: 'player', frame: 29}],
             frameRate: 10,
-        });
-        
+        });        
         this.anims.create({
             key: 'shootRight',
             frames: [{key: 'player', frame: 24}],
@@ -131,19 +130,16 @@ class level1 extends Phaser.Scene
             frames: [{key: 'healthBar', frame: 0}],
             frameRate: 10,
         });
-
         this.anims.create({
             key: 'heartsTwo',
             frames: [{key: 'healthBar', frame: 1}],
             frameRate: 10,
         });
-
         this.anims.create({
             key: 'heartsOne',
             frames: [{key: 'healthBar', frame: 2}],
             frameRate: 10,
         });
-
         this.anims.create({
             key: 'heartsZero',
             frames: [{key: 'healthBar', frame: 3}],
@@ -156,6 +152,42 @@ class level1 extends Phaser.Scene
             frames: this.anims.generateFrameNumbers('fireball', { start: 0, end: 1 }),
             frameRate: 10,
             repeat: -1
+        });
+
+        //Enemy spearman animation
+        this.anims.create({
+            key: 'spearmanLeft',
+            frames: this.anims.generateFrameNumbers('spearman', { start: 11, end: 17 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'spearmanRight',
+            frames: this.anims.generateFrameNumbers('spearman', { start: 0, end: 6 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'spearmanFaceLeft',
+            frames: [{key: 'spearman', frame: 18}],
+            frameRate: 20
+        });
+        this.anims.create({
+            key: 'spearmanFaceRight',
+            frames: [{key: 'spearman', frame: 7}],
+            frameRate: 20
+        });
+        this.anims.create({
+            key: 'spearmanHitLeft',
+            frames: this.anims.generateFrameNumbers('spearman', { start: 19, end: 21 }),
+            frameRate: 10,
+            repeat: 0
+        });
+        this.anims.create({
+            key: 'spearmanHitRight',
+            frames: this.anims.generateFrameNumbers('spearman', { start: 8, end: 10 }),
+            frameRate: 10,
+            repeat: 0
         });
 
         //Healthbar
@@ -172,6 +204,45 @@ class level1 extends Phaser.Scene
         var healthCount = 3;
         this.healthCount = 3;
 
+        //Adding spearman enemy
+        this.enemySpearmans = this.physics.add.group({
+            gravityY: 300,
+        });
+        this.physics.add.collider(this.player, this.enemySpearmans, spearmanHitPlayer, null, this);
+        this.physics.add.collider(this.enemySpearmans, platforms);
+
+        function spearmanHitPlayer (player, enemySpearman)
+        {
+            this.healthCount--;
+            enemySpearman.anims.play('spearmanHitLeft',true); 
+            if(enemySpearman.health ===0)
+            {
+                enemySpearman.disableBody(true,true);
+            }
+        }
+
+        //populating screen with spearman
+        for(var i=500; i<3200;i+=600)
+        {
+            createSpearman(i, this.player,this.enemySpearmans);
+        }
+
+        function createSpearman(i, player,enemySpearmans)
+        {
+            var enemySpearman = enemySpearmans.create(i,500, 'spearman');
+            enemySpearman.anims.play('spearmanLeft', true);
+            enemySpearman.health = 2;
+            enemySpearman.originXValue = i;
+            enemySpearman.direction = "right";
+            enemySpearman.setCollideWorldBounds(true);
+        }
+
+        function spearmanActivated(enemySpearman)
+        {
+            console.log(true);
+            enemySpearman.anims.play('spearmanHitLeft');
+        }
+
         //adding enemies
         var fireballs = this.physics.add.group({
             gravityY: 300,
@@ -182,8 +253,7 @@ class level1 extends Phaser.Scene
         //Player hits fireball
         function hitfireball (player, fireball)
         {
-            // this.physics.pause();
-            player.anims.play('turn');
+            // player.anims.play('turn');
             this.healthCount--;
             fireball.disableBody(true, true);
         }
@@ -202,8 +272,7 @@ class level1 extends Phaser.Scene
         });
         
         //Check star collision with ground
-        this.physics.add.collider(stars, platforms);
-        
+        this.physics.add.collider(stars, platforms);   
         //If player gets star
         this.physics.add.overlap(this.player, stars, collectStar, null, this);
         
@@ -213,7 +282,6 @@ class level1 extends Phaser.Scene
             star.disableBody(true, true);
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
             var fireball = fireballs.create(x, 16, 'fireball');
-            // console.log(fireball);
             fireball.anims.play('fireballMovement', true);
             fireball.setBounce(1);
             fireball.setCollideWorldBounds(true);
@@ -236,6 +304,7 @@ class level1 extends Phaser.Scene
         this.physics.add.collider(this.bullets, fireballs, bulletHit, null, this);
         this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
+        this.physics.add.collider(this.bullets, this.enemySpearmans, bulletHitSpearman, null, this);
 
         //If bullet hit disable
         function bulletHit (bullet, fireball)
@@ -251,6 +320,16 @@ class level1 extends Phaser.Scene
         }
         function bulletBounds (bullet, platforms)
         {
+            bullet.disableBody(true,true);
+        }
+
+        function bulletHitSpearman (bullet, enemySpearman)
+        {
+            enemySpearman.health--;
+            if(enemySpearman.health === 0)
+            {
+                enemySpearman.disableBody(true,true);
+            }
             bullet.disableBody(true,true);
         }
 
@@ -363,6 +442,34 @@ class level1 extends Phaser.Scene
             this.gameOver = true;
             this.physics.pause();
         }
+        
+        //Checks all the spearman in the group
+        for(var i =0; i<this.enemySpearmans.children.size;i++)
+        {
+            var spearman = this.enemySpearmans.children.entries[i];
+            //Spearman paces back and forth
+            if(spearman.x < spearman.originXValue+300 && spearman.direction==="right")
+            {
+
+                spearman.setVelocityX(100);
+            }
+            else if(spearman.x > spearman.originXValue && spearman.direction ==="left")
+            {
+                spearman.setVelocityX(-100);
+               
+            }
+            if(spearman.x >= spearman.originXValue + 300)
+            {
+                spearman.direction = "left";
+                spearman.anims.play('spearmanLeft', true)
+            }
+            else if(spearman.x <=spearman.originXValue)
+            {
+                spearman.direction= "right";
+                spearman.anims.play('spearmanRight', true)
+            }               
+        }
+
 
         //RESET DEBUGGING USE ONLY
         this.key_R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
