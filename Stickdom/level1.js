@@ -166,6 +166,8 @@ class level1 extends Phaser.Scene
         //Collider so healthbar doesn't go off screen
         this.physics.add.collider(this.healthBar, platforms);
         platforms.create(16,16,'blank');
+        platforms.create(2465, 16, 'blank');
+        
         //Health count
         var healthCount = 3;
         this.healthCount = 3;
@@ -285,8 +287,6 @@ class level1 extends Phaser.Scene
             {
                 velX = 200;
                 this.player.anims.play('shootRight');
-
-
             }
             if(this.bulletNum == 1)
             {
@@ -303,7 +303,6 @@ class level1 extends Phaser.Scene
                 this.bulletNum = 1;
             }
             this.key_Space._justUp = false;
-            // console.log(this.healthCount);
         }
         //Moving left
         else if (this.key_Left.isDown)
@@ -311,7 +310,7 @@ class level1 extends Phaser.Scene
             this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
             this.direction = "left";
-            if(this.player.x>=395)
+            if(this.player.x>=395 && this.player.x < 2800)
             {
                 this.healthBar.setVelocityX(-160);
             }
@@ -323,7 +322,7 @@ class level1 extends Phaser.Scene
 
             this.player.anims.play('right', true);
             this.direction = "right";
-            if(this.player.x>=395 ) 
+            if(this.player.x>=395) 
             {
                 this.healthBar.setVelocityX(160);
             }
