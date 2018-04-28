@@ -221,28 +221,31 @@ class level1 extends Phaser.Scene
 
         function spearmanHitPlayer (player, enemySpearman)
         {
-            enemySpearman.hitting = true;
-            if(player.invulnerable === false)
+            if(enemySpearman.y- player.y < 49)
             {
-                player.health--;
-                // player.setTint();
+                enemySpearman.hitting = true;
+                if(player.invulnerable === false)
+                {
+                    // console.log(enemySpearman.y- player.y);
+                    player.health--;
+                }
+                player.invulnerable = true;
+                if(enemySpearman.x > player.x)
+                {
+                    enemySpearman.anims.play('spearmanHitLeft',true); 
+                }
+                else
+                {
+                    enemySpearman.anims.play('spearmanHitRight', true);
+                }
+                this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
+                this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
+                this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
+                this.spearmanHitTimer = this.time.delayedCall(1000,spearmanHit,[enemySpearman], this);
+                // var playerInvulnerable;
+                
+                //  enemySpearman.hitting = false;   
             }
-            player.invulnerable = true;
-            if(enemySpearman.x > player.x)
-            {
-                enemySpearman.anims.play('spearmanHitLeft',true); 
-            }
-            else
-            {
-                enemySpearman.anims.play('spearmanHitRight', true);
-            }
-            var spearmanHitTimer;
-            this.spearmanHitTimer = this.time.delayedCall(1000,spearmanHit,[enemySpearman], this);
-            // var playerInvulnerable;
-            this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
-            this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
-            this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
-            //  enemySpearman.hitting = false;   
         }
 
         //populating screen with spearman
@@ -286,7 +289,7 @@ class level1 extends Phaser.Scene
                 player.invulnerable = true;
                 //Call destruction of fireball
                 this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
-            this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
+            this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});  
                 this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
                 fireball.anims.play('fireballDestroyed', true);
                 //timer for destruction of fireball
@@ -450,7 +453,7 @@ class level1 extends Phaser.Scene
                 this.bulletTwo.setGravityY(35);
                 this.bulletNum = 1;
             }
-            console.log(this.player);
+            // console.log(this.player);
             this.key_Space._justUp = false;
         }
         //Moving left
