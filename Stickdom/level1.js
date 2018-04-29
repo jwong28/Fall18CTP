@@ -10,6 +10,7 @@ class level1 extends Phaser.Scene
         //loading images
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
+        this.load.image('bossPlatform', 'assets/bossPlatform.png');
         this.load.image('star', 'assets/star.png');
         this.load.image('fireball', 'assets/fireball.png');
         this.load.spritesheet('player', 
@@ -68,7 +69,17 @@ class level1 extends Phaser.Scene
         platforms.create(600, 400, 'ground');
         platforms.create(50, 300, 'ground');
         platforms.create(750, 220, 'ground');
-        
+
+        platforms.create(1350, 400, 'ground');
+        platforms.create(1550, 250, 'ground'); 
+        platforms.create(2150, 250, 'ground');
+        platforms.create(1850, 100, 'ground');
+
+        var bossPlatforms;
+        bossPlatforms = this.physics.add.staticGroup();
+        bossPlatforms.create(2525,400,'bossPlatform');
+        bossPlatforms.create(2800,250,'bossPlatform');
+        bossPlatforms.create(3075,350,'bossPlatform');
 
         //Camera
         this.cameras.main.setBounds(0,0,3200,600);
@@ -83,6 +94,7 @@ class level1 extends Phaser.Scene
         direction = "left";
         //Player collision with platform
         this.physics.add.collider(this.player, platforms);
+        this.physics.add.collider(this.player, bossPlatforms);
         //Camera follows player
         this.cameras.main.startFollow(this.player); 
 
@@ -302,6 +314,9 @@ class level1 extends Phaser.Scene
                 this.bulletTwo.setGravityY(35);
                 this.bulletNum = 1;
             }
+            console.log("Player coordinates");
+            console.log(this.player.x);
+            console.log(this.player.y);
             this.key_Space._justUp = false;
         }
         //Moving left
