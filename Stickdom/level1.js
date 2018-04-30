@@ -254,9 +254,13 @@ class level1 extends Phaser.Scene
         this.boss = this.physics.add.group({
             gravityY:300,
         });
-        var bossSpearman = this.boss.create(3100,400,'boss');
-        bossSpearman.anims.play('bossHitLeft',true);
+        var bossSpearman = this.boss.create(2800,400,'boss');
+        bossSpearman.anims.play('bossLeft',true);
+        bossSpearman.setCollideWorldBounds(true);
         this.physics.add.collider(this.boss, platforms);
+        this.physics.add.collider(this.player, this.boss, bossHitPlayer, null, this);
+
+
 
         //Healthbar
         this.health = this.physics.add.group();
@@ -290,9 +294,21 @@ class level1 extends Phaser.Scene
         }
 
         //populating screen with spearman
-        for(var i=500; i<3200;i+=600)
+        // for(var i=500; i<3200;i+=600)
+        // {
+        //     createSpearman(i, this.player,this.enemySpearmans);
+        // }
+
+        function bossHitPlayer(player, boss)
         {
-            createSpearman(i, this.player,this.enemySpearmans);
+            if(player.x >boss.x)
+            {
+                boss.anims.play('bossHitRight', true);
+            }
+            else if(player.x < boss.x)
+            {
+                boss.anims.play('bossHitLeft' , true);
+            }
         }
 
         function createSpearman(i, player,enemySpearmans)
