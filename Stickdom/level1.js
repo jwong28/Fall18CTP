@@ -148,13 +148,15 @@ class level1 extends Phaser.Scene
 
         //Healthbar
         this.health = this.physics.add.group();
-        this.healthBar = this.health.create(40,16,'blank');
+        this.healthBar = this.health.create(40,585,'blank');
         this.healthBar.anims.play('heartsThree');
         this.healthBar.setCollideWorldBounds(true);
         //Collider so healthbar doesn't go off screen
-        this.physics.add.collider(this.healthBar, platforms);
-        platforms.create(16,16,'blank');
-        platforms.create(2465, 16, 'blank');
+        var blanks;
+        blanks = this.physics.add.staticGroup();
+        this.physics.add.collider(this.healthBar, blanks);
+        blanks.create(16,585,'blank');
+        blanks.create(2465, 585, 'blank');
         
         //Health count
         var healthCount = 3;
