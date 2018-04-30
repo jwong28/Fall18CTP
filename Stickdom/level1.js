@@ -304,6 +304,7 @@ class level1 extends Phaser.Scene
             if(player.x >boss.x)
             {
                 boss.anims.play('bossHitRight', true);
+                // this.fireballTimedDestruction = this.time.delayedCall(200,onEvent,[fireball], this);
             }
             else if(player.x < boss.x)
             {
