@@ -297,6 +297,7 @@ class level1 extends Phaser.Scene
         this.physics.add.collider(this.bullets, fireballs, bulletHit, null, this);
         this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
+        this.physics.add.collider(this.bullets, this.boss, bulletHitBoss, null, this);
 
         //If bullet hit disable
         function bulletHit (bullet, fireball)
@@ -311,6 +312,12 @@ class level1 extends Phaser.Scene
             this.bulletTwo.disableBody(true,true);
         }
         function bulletBounds (bullet, platforms)
+        {
+            bullet.disableBody(true,true);
+        }
+
+        //Delete a bullet when bullet hits boss
+        function bulletHitBoss (bullet, boss)
         {
             bullet.disableBody(true,true);
         }
