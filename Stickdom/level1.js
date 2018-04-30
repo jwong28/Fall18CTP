@@ -531,7 +531,7 @@ class level1 extends Phaser.Scene
             this.key_R._justUp = false;
         }
 
-        if(this.player.x > 2790 && this.player.x <2800)
+        if(this.player.x > 2800 && this.player.x <2810)
         {
             if(this.atBoss === 0)
             {
