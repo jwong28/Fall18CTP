@@ -11,6 +11,7 @@ class level1 extends Phaser.Scene
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
         this.load.image('bossPlatform', 'assets/bossPlatform.png');
+        this.load.image('wall', 'assets/wall.png');
         this.load.image('star', 'assets/star.png');
         this.load.image('fireball', 'assets/fireball.png');
         this.load.spritesheet('player', 
@@ -43,6 +44,10 @@ class level1 extends Phaser.Scene
         var bulletNum=0;
         this.bulletNum=1;        
         
+        //to check if player is at boss section
+        var atBoss = 0;
+        this.atBoss = 0;
+
         //Keycodes
         this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.key_Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
@@ -80,6 +85,10 @@ class level1 extends Phaser.Scene
         bossPlatforms.create(2525,400,'bossPlatform');
         bossPlatforms.create(2800,250,'bossPlatform');
         bossPlatforms.create(3075,350,'bossPlatform');
+
+        // var walls;
+        this.walls = this.physics.add.staticGroup();
+        
 
         //Camera
         this.cameras.main.setBounds(0,0,3200,600);
@@ -314,9 +323,7 @@ class level1 extends Phaser.Scene
                 this.bulletTwo.setGravityY(35);
                 this.bulletNum = 1;
             }
-            console.log("Player coordinates");
             console.log(this.player.x);
-            console.log(this.player.y);
             this.key_Space._justUp = false;
         }
         //Moving left
@@ -333,8 +340,8 @@ class level1 extends Phaser.Scene
         //Moving right
         else if (this.key_Right.isDown)
         {
-            this.player.setVelocityX(160);
-
+            this.player.setVelocityX(500);
+            // this.player.setVelocityX(160);
             this.player.anims.play('right', true);
             this.direction = "right";
             if(this.player.x>=395) 
@@ -390,6 +397,18 @@ class level1 extends Phaser.Scene
             this.healthCount = 3;
             this.healthBar.anims.play('heartsThree');
             this.key_R._justUp = false;
+        }
+
+        if(this.player.x > 2790 && this.player.x <2800)
+        {
+            if(this.atBoss === 0)
+            {
+                // this.walls.create()
+                console.log(this.atBoss);
+                this.walls.create(3075,350,'wall');
+
+            }
+            this.atBoss = 1;
         }
     }
     
