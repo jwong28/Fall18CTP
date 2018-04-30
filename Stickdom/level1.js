@@ -27,6 +27,11 @@ class level1 extends Phaser.Scene
         'assets/fireball.png',
             {frameWidth: 17, frameHeight: 17}   
         );
+        this.load.spritesheet('boss', 
+            'assets/bigSpearman.png',
+            {frameWidth: 64, frameHeight: 100}
+            // { frameWidth: 32, frameHeight: 50 }
+        );
     }
 
    
@@ -157,6 +162,62 @@ class level1 extends Phaser.Scene
             frameRate: 10,
             repeat: -1
         });
+
+        //Boss animation
+        this.anims.create({
+            key: 'bossLeft',
+            frames: this.anims.generateFrameNumbers('boss', { start: 16, end: 23 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'bossRight',
+            frames: this.anims.generateFrameNumbers('boss', { start: 0, end: 7 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'bossFaceLeft',
+            frames: [{key: 'boss', frame: 7}],
+            frameRate: 20
+        });
+        this.anims.create({
+            key: 'bossFaceRight',
+            frames: [{key: 'boss', frame: 23}],
+            frameRate: 20
+        });
+        this.anims.create({
+            key: 'bossHitLeft',
+            frames: this.anims.generateFrameNumbers('boss', { start: 24, end: 29 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'bossHitRight',
+            frames: this.anims.generateFrameNumbers('boss', { start: 8, end: 13 }),
+            frameRate: 6,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'bossSummonLeft',
+            frames: this.anims.generateFrameNumbers('boss', { start: 30, end: 31 }),
+            frameRate: 5,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'bossSummonRight',
+            frames: this.anims.generateFrameNumbers('boss', { start: 14, end: 15 }),
+            frameRate: 5,
+            repeat: -1
+        });
+
+        //add boss
+        this.boss = this.physics.add.group({
+            gravityY:300,
+        });
+        var bossSpearman = this.boss.create(3100,400,'boss');
+        bossSpearman.anims.play('bossHitLeft',true);
+        this.physics.add.collider(this.boss, platforms);
 
         //Healthbar
         this.health = this.physics.add.group();
@@ -318,8 +379,8 @@ class level1 extends Phaser.Scene
         //Moving right
         else if (this.key_Right.isDown)
         {
-            this.player.setVelocityX(160);
-
+            this.player.setVelocityX(500);
+            // this.player.setVelocityX(160);
             this.player.anims.play('right', true);
             this.direction = "right";
             if(this.player.x>=395) 
