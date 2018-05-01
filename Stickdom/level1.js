@@ -151,6 +151,10 @@ class level1 extends Phaser.Scene
         this.healthBar = this.health.create(40,585,'blank');
         this.healthBar.anims.play('heartsThree');
         this.healthBar.setCollideWorldBounds(true);
+        //Score
+        // this.scoreBar = this.health.add.text(16,16, 'Score: 0', { fontSize: '32px', fill: '#000'});
+        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+        this.health.create(40,16,this.scoreText);
         //Collider so healthbar doesn't go off screen
         var blanks;
         blanks = this.physics.add.staticGroup();
