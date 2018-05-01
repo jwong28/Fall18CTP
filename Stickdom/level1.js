@@ -10,6 +10,8 @@ class level1 extends Phaser.Scene
         //loading images
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
+        this.load.image('bossPlatform', 'assets/bossPlatform.png');
+        this.load.image('wall', 'assets/wall.png');
         this.load.image('star', 'assets/star.png');
         this.load.image('fireball', 'assets/fireball.png');
         this.load.spritesheet('player', 
@@ -45,7 +47,10 @@ class level1 extends Phaser.Scene
         //bullet number for bullet checking
         var bulletNum=0;
         this.bulletNum=1;        
-
+        
+        //to check if player is at boss section
+        var atBoss = 0;
+        this.atBoss = 0;
 
         //Keycodes
         this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -73,6 +78,20 @@ class level1 extends Phaser.Scene
         platforms.create(600, 400, 'ground');
         platforms.create(50, 300, 'ground');
         platforms.create(750, 220, 'ground');
+
+        platforms.create(1350, 400, 'ground');
+        platforms.create(1550, 250, 'ground'); 
+        platforms.create(2150, 250, 'ground');
+        platforms.create(1850, 100, 'ground');
+
+        var bossPlatforms;
+        bossPlatforms = this.physics.add.staticGroup();
+        bossPlatforms.create(2525,400,'bossPlatform');
+        bossPlatforms.create(2800,250,'bossPlatform');
+        bossPlatforms.create(3075,350,'bossPlatform');
+
+        // var walls;
+        this.walls = this.physics.add.staticGroup();
         
 
         //Camera
@@ -89,6 +108,8 @@ class level1 extends Phaser.Scene
         this.player.health = 3;
         //Player collision with platform
         this.physics.add.collider(this.player, platforms);
+        this.physics.add.collider(this.player, bossPlatforms);
+        this.physics.add.collider(this.player, this.walls);
         //Camera follows player
         this.cameras.main.startFollow(this.player); 
 
@@ -245,8 +266,8 @@ class level1 extends Phaser.Scene
             //  enemySpearman.hitting = false;   
         }
 
-        //populating screen with spearman
-        for(var i=500; i<3200;i+=600)
+        // populating screen with spearman
+        for(var i=500; i<2000;i+=500)
         {
             createSpearman(i, this.player,this.enemySpearmans);
         }
@@ -450,7 +471,6 @@ class level1 extends Phaser.Scene
                 this.bulletTwo.setGravityY(35);
                 this.bulletNum = 1;
             }
-            console.log(this.player);
             this.key_Space._justUp = false;
         }
         //Moving left
@@ -468,7 +488,6 @@ class level1 extends Phaser.Scene
         else if (this.key_Right.isDown)
         {
             this.player.setVelocityX(160);
-
             this.player.anims.play('right', true);
             this.player.direction = "right";
             if(this.player.x>=395) 
@@ -557,6 +576,34 @@ class level1 extends Phaser.Scene
             this.player.health = 3;
             this.healthBar.anims.play('heartsThree');
             this.key_R._justUp = false;
+        }
+
+        if(this.player.x > 2800 && this.player.x <2810)
+        {
+            if(this.atBoss === 0)
+            {
+                this.physics.pause();
+                var time = 500;
+                for(var i = -14; i<=486; i+=100)
+                {
+                    this.createWalls = this.time.delayedCall(time,createWall,[i], this);
+                    time += 500;
+                }
+                this.resumePhysics = this.time.delayedCall(4000, resumePhysics,[], this);
+            }
+            this.atBoss = 1;
+        }
+
+        function createWall(i)
+        {
+            this.walls.create(2416,i, 'wall');
+            this.walls.create(3184,i, 'wall');
+        }
+
+        function resumePhysics()
+        {
+            this.physics.resume();
+            this.cameras.main.stopFollow();
         }
     }
     
