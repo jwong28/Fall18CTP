@@ -10,6 +10,8 @@ class level1 extends Phaser.Scene
         //loading images
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
+        this.load.image('bossPlatform', 'assets/bossPlatform.png');
+        this.load.image('wall', 'assets/wall.png');
         this.load.image('star', 'assets/star.png');
         this.load.image('fireball', 'assets/fireball.png');
         this.load.spritesheet('player', 
@@ -46,11 +48,15 @@ class level1 extends Phaser.Scene
         this.add.image(1600,300,'background');
         //Setting world bounds
         this.physics.world.bounds.width = 3200;
+        // this.physics.world.bounds.height = 390;
         
         //bullet number for bullet checking
         var bulletNum=0;
         this.bulletNum=1;        
-
+        
+        //to check if player is at boss section
+        var atBoss = 0;
+        this.atBoss = 0;
 
         //Keycodes
         this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -78,6 +84,20 @@ class level1 extends Phaser.Scene
         platforms.create(600, 400, 'ground');
         platforms.create(50, 300, 'ground');
         platforms.create(750, 220, 'ground');
+
+        platforms.create(1350, 400, 'ground');
+        platforms.create(1550, 250, 'ground'); 
+        platforms.create(2150, 250, 'ground');
+        platforms.create(1850, 100, 'ground');
+
+        var bossPlatforms;
+        bossPlatforms = this.physics.add.staticGroup();
+        bossPlatforms.create(2525,400,'bossPlatform');
+        bossPlatforms.create(2800,250,'bossPlatform');
+        bossPlatforms.create(3075,350,'bossPlatform');
+
+        // var walls;
+        this.walls = this.physics.add.staticGroup();
         
 
         //Camera
@@ -88,11 +108,14 @@ class level1 extends Phaser.Scene
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
         this.player.body.setGravityY(300) 
-        //direction player facing
-        var direction;
-        direction = "left";
+        //Player variables
+        this.player.direction = "left";
+        this.player.invulnerable = false;
+        this.player.health = 3;
         //Player collision with platform
         this.physics.add.collider(this.player, platforms);
+        this.physics.add.collider(this.player, bossPlatforms);
+        this.physics.add.collider(this.player, this.walls);
         //Camera follows player
         this.cameras.main.startFollow(this.player); 
 
@@ -211,7 +234,7 @@ class level1 extends Phaser.Scene
         });
         this.anims.create({
             key: 'bossRight',
-            frames: this.anims.generateFrameNumbers('boss', { start: 0, end: 7 }),
+            frames: this.anims.generateFrameNumbers('boss', { start: 0, end: 6 }),
             frameRate: 10,
             repeat: -1
         });
@@ -229,13 +252,13 @@ class level1 extends Phaser.Scene
             key: 'bossHitLeft',
             frames: this.anims.generateFrameNumbers('boss', { start: 24, end: 29 }),
             frameRate: 10,
-            repeat: -1
+            repeat: 0
         });
         this.anims.create({
             key: 'bossHitRight',
             frames: this.anims.generateFrameNumbers('boss', { start: 8, end: 13 }),
             frameRate: 6,
-            repeat: -1
+            repeat: 0
         });
         this.anims.create({
             key: 'bossSummonLeft',
@@ -255,9 +278,15 @@ class level1 extends Phaser.Scene
             gravityY:300,
         });
         var bossSpearman = this.boss.create(2800,400,'boss');
-        bossSpearman.anims.play('bossLeft',true);
+        bossSpearman.anims.play('bossSummonRight',true);
         bossSpearman.setCollideWorldBounds(true);
+        bossSpearman.activated= 0;
+        bossSpearman.summon = 0;
+        bossSpearman.direction = 'left';
+        // bossSpearman.setImmovable(true);
+        bossSpearman.hitting = false;
         this.physics.add.collider(this.boss, platforms);
+        this.physics.add.collider(this.boss, this.walls);
         this.physics.add.collider(this.player, this.boss, bossHitPlayer, null, this);
 
 
@@ -273,8 +302,8 @@ class level1 extends Phaser.Scene
         platforms.create(2465, 16, 'blank');
         
         //Health count
-        var healthCount = 3;
-        this.healthCount = 3;
+        // var healthCount = 3;
+        // this.healthCount = 3;
 
         //Adding spearman enemy
         this.enemySpearmans = this.physics.add.group({
@@ -285,69 +314,98 @@ class level1 extends Phaser.Scene
 
         function spearmanHitPlayer (player, enemySpearman)
         {
-            this.healthCount--;
-            enemySpearman.anims.play('spearmanHitLeft',true); 
-            if(enemySpearman.health ===0)
+            enemySpearman.hitting = true;
+            if(player.invulnerable === false)
             {
-                enemySpearman.disableBody(true,true);
+                player.health--;
+                // player.setTint();
             }
+            player.invulnerable = true;
+            if(enemySpearman.x > player.x)
+            {
+                enemySpearman.anims.play('spearmanHitLeft',true); 
+            }
+            else
+            {
+                enemySpearman.anims.play('spearmanHitRight', true);
+            }
+            var spearmanHitTimer;
+            this.spearmanHitTimer = this.time.delayedCall(1000,spearmanHit,[enemySpearman], this);
+            // var playerInvulnerable;
+            this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
+            this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
+            this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
+            //  enemySpearman.hitting = false;   
         }
 
         //populating screen with spearman
-        // for(var i=500; i<3200;i+=600)
-        // {
-        //     createSpearman(i, this.player,this.enemySpearmans);
-        // }
-
-        function bossHitPlayer(player, boss)
+        for(var i=500; i<2400;i+=600)
         {
-            if(player.x >boss.x)
+            createSpearman(i, this.player,this.enemySpearmans);
+        }
+
+        function bossHitPlayer(player, bossSpearman)
+        {
+            bossSpearman.hitting = true;
+            if(player.invulnerable === false)
             {
-                boss.anims.play('bossHitRight', true);
-                // this.fireballTimedDestruction = this.time.delayedCall(200,onEvent,[fireball], this);
+                player.health--;
+                // player.setTint();
             }
-            else if(player.x < boss.x)
+            player.invulnerable = true;
+            if(bossSpearman.x > player.x)
             {
-                boss.anims.play('bossHitLeft' , true);
+                bossSpearman.anims.play('bossHitLeft',true); 
             }
+            else
+            {
+                bossSpearman.anims.play('bossHitRight', true);
+            }
+            this.bossHitTimer = this.time.delayedCall(1500,bossHit,[bossSpearman], this);
+            // var playerInvulnerable;
+            this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
+            this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
+            this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
         }
 
         function createSpearman(i, player,enemySpearmans)
         {
-            var enemySpearman = enemySpearmans.create(i,500, 'spearman');
+            var enemySpearman = enemySpearmans.create(i,300, 'spearman');
             enemySpearman.anims.play('spearmanLeft', true);
             enemySpearman.health = 2;
             enemySpearman.originXValue = i;
             enemySpearman.direction = "right";
+            enemySpearman.hitting = false;
             enemySpearman.setCollideWorldBounds(true);
+            enemySpearman.body.setImmovable(true);
         }
 
-        function spearmanActivated(enemySpearman)
-        {
-            console.log(true);
-            enemySpearman.anims.play('spearmanHitLeft');
-        }
 
         //adding enemies
-        var fireballs = this.physics.add.group({
+        this.fireballs = this.physics.add.group({
             gravityY: 300,
         });
-        this.physics.add.collider(fireballs, platforms);
-        this.physics.add.collider(this.player, fireballs, hitfireball, null, this);
+        this.physics.add.collider(this.fireballs, platforms);
+        this.physics.add.collider(this.fireballs, this.walls);
+        this.physics.add.collider(this.player, this.fireballs, hitfireball, null, this);
 
         //Player hits fireball
         function hitfireball (player, fireball)
         {
-            if(fireball.destroyed===0){
-                // player.anims.play('turn');
-                this.healthCount--;
+                if(player.invulnerable === false)
+                {
+                    // player.setTint();
+                    player.health--;
+                }
+                player.invulnerable = true;
                 //Call destruction of fireball
+                this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
+                this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
+                this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
                 fireball.anims.play('fireballDestroyed', true);
-                fireball.destroyed = 1;
-                //timer
+                //timer for destruction of fireball
                 var fireballTimedDestruction;
-                this.fireballTimedDestruction = this.time.delayedCall(200,onEvent,[fireball], this);
-            }
+                this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
         }
 
         //Creating group of stars
@@ -373,7 +431,7 @@ class level1 extends Phaser.Scene
         {
             star.disableBody(true, true);
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-            var fireball = fireballs.create(x, 16, 'fireball');
+            var fireball = this.fireballs.create(x, 16, 'fireball');
             fireball.destroyed = 0;
             fireball.anims.play('fireballMovement', true);
             fireball.setBounce(1);
@@ -394,7 +452,7 @@ class level1 extends Phaser.Scene
         
         //add bullets group
         this.bullets = this.physics.add.group();
-        this.physics.add.collider(this.bullets, fireballs, bulletHit, null, this);
+        this.physics.add.collider(this.bullets, this.fireballs, bulletHit, null, this);
         this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
         this.physics.add.collider(this.bullets, this.boss, bulletHitBoss, null, this);
@@ -410,7 +468,7 @@ class level1 extends Phaser.Scene
                 fireball.destroyed = 1;
                 //timer
                 var fireballTimedDestruction;
-                this.fireballTimedDestruction = this.time.delayedCall(200,onEvent,[fireball], this);
+                this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
             }
         }
 
@@ -424,7 +482,7 @@ class level1 extends Phaser.Scene
             bullet.disableBody(true,true);
         }
         //After a certain amount of time, fireball disappears
-        function onEvent(fireball)
+        function fireballDestruction(fireball)
         {
             fireball.disableBody(true, true);
         }
@@ -433,6 +491,19 @@ class level1 extends Phaser.Scene
         function bulletHitBoss (bullet, boss)
         {
             bullet.disableBody(true,true);
+        }
+        
+        //Wait time for spearman to hit the player
+        function spearmanHit(spearman)
+        {
+            spearman.hitting = false;
+        }
+
+        function bossHit(bossSpearman)
+        {
+            bossSpearman.hitting = false;
+            // bossSpearman.setImmovable(false);
+
         }
 
         function bulletHitSpearman (bullet, enemySpearman)
@@ -444,6 +515,21 @@ class level1 extends Phaser.Scene
             }
             bullet.disableBody(true,true);
         }
+
+        function playerInvulnerable (player)
+        {
+            player.invulnerable = false;
+        }
+
+        function playerInvisible()
+        {
+            this.player.setVisible(false);
+        }
+
+        function playerVisible()
+        {
+            this.player.setVisible(true);
+        }
     }
 
     update (delta)
@@ -453,11 +539,11 @@ class level1 extends Phaser.Scene
         {
             this.player.setVelocityX(0);
             this.healthBar.setVelocityX(0);
-            if(this.direction=== "left")
+            if(this.player.direction=== "left")
             {
                 this.player.anims.play('shootLeft');
             }
-            else if(this.direction === "right")
+            else if(this.player.direction === "right")
             {
                 this.player.anims.play('shootRight');
             }
@@ -468,12 +554,12 @@ class level1 extends Phaser.Scene
         //Just up is used if the button is pressed, hence just popped up
         {
             var velX = 200;
-            if(this.direction=== "left")
+            if(this.player.direction=== "left")
             {
                 velX = -200;
                 this.player.anims.play('shootLeft');
             }
-            else if(this.direction === "right")
+            else if(this.player.direction === "right")
             {
                 velX = 200;
                 this.player.anims.play('shootRight');
@@ -499,7 +585,7 @@ class level1 extends Phaser.Scene
         {  
             this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
-            this.direction = "left";
+            this.player.direction = "left";
             if(this.player.x>=395 && this.player.x < 2800)
             {
                 this.healthBar.setVelocityX(-160);
@@ -511,7 +597,7 @@ class level1 extends Phaser.Scene
             this.player.setVelocityX(500);
             // this.player.setVelocityX(160);
             this.player.anims.play('right', true);
-            this.direction = "right";
+            this.player.direction = "right";
             if(this.player.x>=395) 
             {
                 this.healthBar.setVelocityX(160);
@@ -522,11 +608,11 @@ class level1 extends Phaser.Scene
         {
             this.player.setVelocityX(0);
             this.healthBar.setVelocityX(0);
-            if(this.direction === "left")
+            if(this.player.direction === "left")
             {
                 this.player.anims.play('faceLeft');
             }
-            else if(this.direction === "right")
+            else if(this.player.direction === "right")
             {
                 this.player.anims.play('faceRight');
             } 
@@ -539,15 +625,15 @@ class level1 extends Phaser.Scene
         }
 
         //Different heart animations for different health
-        if(this.healthCount === 2)
+        if(this.player.health === 2)
         {
             this.healthBar.anims.play('heartsTwo');
         }
-        else if (this.healthCount === 1)
+        else if (this.player.health === 1)
         {
             this.healthBar.anims.play('heartsOne');
         }
-        else if (this.healthCount === 0)
+        else if (this.player.health === 0)
         {
             this.healthBar.anims.play('heartsZero');
             this.gameOver = true;
@@ -559,28 +645,125 @@ class level1 extends Phaser.Scene
         {
             var spearman = this.enemySpearmans.children.entries[i];
             //Spearman paces back and forth
-            if(spearman.x < spearman.originXValue+300 && spearman.direction==="right")
+            if(spearman.hitting === true)
             {
-
+                spearman.setVelocityX(0);
+            }
+            else if(spearman.x < spearman.originXValue+300 && spearman.direction==="right")
+            {
                 spearman.setVelocityX(100);
+                spearman.anims.play('spearmanRight', true)
             }
             else if(spearman.x > spearman.originXValue && spearman.direction ==="left")
             {
                 spearman.setVelocityX(-100);
-               
+                spearman.anims.play('spearmanLeft', true)
             }
+
             if(spearman.x >= spearman.originXValue + 300)
             {
                 spearman.direction = "left";
-                spearman.anims.play('spearmanLeft', true)
             }
             else if(spearman.x <=spearman.originXValue)
             {
                 spearman.direction= "right";
-                spearman.anims.play('spearmanRight', true)
             }               
         }
 
+        var bossSpearman = this.boss.children.entries[0];
+        if(bossSpearman.activated === 1)
+        {
+            if(bossSpearman.hitting === true)
+            {
+                bossSpearman.setVelocityX(0);
+            }
+            else if(bossSpearman.x < 3136 && bossSpearman.direction === 'right')
+            {
+                bossSpearman.setVelocityX(160)
+                bossSpearman.anims.play('bossRight',true);
+            }
+            else if(bossSpearman.x > 2464 && bossSpearman.direction === 'left')
+            {
+                bossSpearman.setVelocityX(-160);
+                bossSpearman.anims.play('bossLeft', true);
+            }
+
+            if(bossSpearman.x >2800 && bossSpearman.x < 2810)
+            {
+                bossSpearman.summon = 0;
+            }
+
+            if(bossSpearman.hitting === true)
+            {
+                bossSpearman.setVelocityX(0);
+            }
+            else if(bossSpearman.x >= 3134 )
+            {
+                bossSpearman.anims.play('bossSummonRight',true);
+                this.bossSummon = this.time.delayedCall(2000,summonFireballs,[bossSpearman], this);
+            }
+            else if(bossSpearman.x <= 2464)
+            {
+                bossSpearman.anims.play('bossSummonLeft',true);
+                this.bossSummon = this.time.delayedCall(2000,summonFireballs,[bossSpearman], this);
+            }
+        }
+
+        function summonFireballs()
+        {
+            if(bossSpearman.summon === 0)
+            {    
+                for(var i = 0; i< 5; i++)
+                {
+                    var x = (this.player.x < 3200) ? Phaser.Math.Between(2500, 3100) : Phaser.Math.Between(2500, 3100);
+                    this.fireball = this.fireballs.create(x, 16, 'fireball');
+                    this.fireball.destroyed = 0;
+                    this.fireball.anims.play('fireballMovement', true);
+                    this.fireball.setBounce(1);
+                    this.fireball.setCollideWorldBounds(true);
+                    this.fireball.setVelocity(Phaser.Math.Between(-200, 200), 20);
+                    this.fireball.allowGravity = false;
+                }
+                if(bossSpearman.direction === 'left')
+                {
+                    bossSpearman.direction = 'right';
+                }
+                else if(bossSpearman.direction === 'right')
+                {
+                    bossSpearman.direction = 'left';
+                }
+            }
+            bossSpearman.summon=1;
+        }
+
+        if(this.player.x > 2800 && this.player.x <2810)
+        {
+            if(this.atBoss === 0)
+            {
+                this.physics.pause();
+                var time = 500;
+                for(var i = -14; i<=486; i+=100)
+                {
+                    this.createWalls = this.time.delayedCall(time,createWall,[i], this);
+                    time += 500;
+                }
+                this.resumePhysics = this.time.delayedCall(4000, resumePhysics,[], this);
+            }
+            this.atBoss = 1;
+            bossSpearman.activated=1;
+        }
+
+        function createWall(i)
+        {
+            this.walls.create(2416,i, 'wall');
+            this.walls.create(3184,i, 'wall');
+        }
+
+        function resumePhysics()
+        {
+            this.physics.resume();
+            this.cameras.main.stopFollow();
+        }
 
         //RESET DEBUGGING USE ONLY
         this.key_R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -590,10 +773,13 @@ class level1 extends Phaser.Scene
             // this.player.setTint();
             this.player.anims.play('turn');
             this.gameOver = false;
-            this.healthCount = 3;
+            // this.healthCount = 3;
+            this.player.health = 3;
             this.healthBar.anims.play('heartsThree');
             this.key_R._justUp = false;
         }
+
+
     }
     
 }
