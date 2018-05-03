@@ -267,10 +267,10 @@ class level1 extends Phaser.Scene
         }
 
         // populating screen with spearman
-        for(var i=500; i<2000;i+=500)
-        {
-            createSpearman(i, this.player,this.enemySpearmans);
-        }
+        // for(var i=500; i<2000;i+=500)
+        // {
+        //     createSpearman(i, this.player,this.enemySpearmans);
+        // }
 
         function createSpearman(i, player,enemySpearmans)
         {
@@ -318,10 +318,11 @@ class level1 extends Phaser.Scene
         //Creating group of stars
         var stars = this.physics.add.group({
             key: 'star',
-            repeat: 11,
+            repeat: 33,
             setXY: { x: 12, y: 0, stepX: 70 },
             gravityY: 300,
         });
+        stars.createMultiple({key: 'star', repeat: 10, setXY:{x: 400, y:300, stepX: 100 }, gravityY:300});
 
         stars.children.iterate(function (child) {
 
@@ -337,7 +338,7 @@ class level1 extends Phaser.Scene
         function collectStar (player, star)
         {
             star.disableBody(true, true);
-            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+            var x = (player.x < 2400) ? Phaser.Math.Between(player.x-200, player.x+200) : Phaser.Math.Between(player.x-200, player.x+200);
             var fireball = fireballs.create(x, 16, 'fireball');
             fireball.destroyed = 0;
             fireball.anims.play('fireballMovement', true);
@@ -475,8 +476,9 @@ class level1 extends Phaser.Scene
         }
         //Moving left
         else if (this.key_Left.isDown)
-        {  
-            this.player.setVelocityX(-160);
+        {              
+            this.player.setVelocityX(-500);
+            // this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
             this.player.direction = "left";
             if(this.player.x>=395 && this.player.x < 2800)
@@ -487,7 +489,8 @@ class level1 extends Phaser.Scene
         //Moving right
         else if (this.key_Right.isDown)
         {
-            this.player.setVelocityX(160);
+            this.player.setVelocityX(500);
+            // this.player.setVelocityX(160);
             this.player.anims.play('right', true);
             this.player.direction = "right";
             if(this.player.x>=395) 
