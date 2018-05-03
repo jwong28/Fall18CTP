@@ -308,12 +308,12 @@ class level1 extends Phaser.Scene
                 if(player.invulnerable === false)
                 {
                     player.health--;
+                    player.invulnerable = true;
+                    //Player flash effect
+                    this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
+                    this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});  
+                    this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
                 }
-                player.invulnerable = true;
-                //Player flash effect
-                this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
-                this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});  
-                this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
                 fireball.anims.play('fireballDestroyed', true);
                 //timer for destruction of fireball
                 this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
