@@ -229,9 +229,11 @@ class level1 extends Phaser.Scene
         platforms.create(16,16,'blank');
         platforms.create(2465, 16, 'blank');
         
-        //Health count
-        // var healthCount = 3;
-        // this.healthCount = 3;
+        //Score
+        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+        this.scoreText.setScrollFactor(0);
+        var score = 0;
+        this.health.create(40,16,this.scoreText);
 
         //Adding spearman enemy
         this.enemySpearmans = this.physics.add.group({
@@ -307,7 +309,7 @@ class level1 extends Phaser.Scene
                 player.invulnerable = true;
                 //Call destruction of fireball
                 this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
-            this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
+                this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
                 this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
                 fireball.anims.play('fireballDestroyed', true);
                 //timer for destruction of fireball
@@ -336,6 +338,8 @@ class level1 extends Phaser.Scene
         //Collect star if touching FUNCTION!!!!!
         function collectStar (player, star)
         {
+            score += 10;
+            this.scoreText.setText('Score: ' + score);
             star.disableBody(true, true);
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
             var fireball = fireballs.create(x, 16, 'fireball');
@@ -367,6 +371,8 @@ class level1 extends Phaser.Scene
         //If bullet hit disable
         function bulletHit (bullet, fireball)
         {
+            score += 10;
+            this.scoreText.setText('Score: ' + score);
             bullet.disableBody(true,true);
             if(fireball.destroyed===0){
                 //Call destruction of fireball
@@ -404,6 +410,8 @@ class level1 extends Phaser.Scene
             enemySpearman.health--;
             if(enemySpearman.health === 0)
             {
+                score += 25;
+                this.scoreText.setText('Score: ' + score);
                 enemySpearman.disableBody(true,true);
             }
             bullet.disableBody(true,true);
