@@ -242,15 +242,24 @@ class level1 extends Phaser.Scene
 
         function spearmanHitPlayer (player, enemySpearman)
         {
+            //If player is in front or behind the spearman
             if(enemySpearman.y- player.y < 49)
             {
+                //Spearman is hitting
                 enemySpearman.hitting = true;
+                //If player hasn't been hit already
                 if(player.invulnerable === false)
                 {
-                    // console.log(enemySpearman.y- player.y);
                     player.health--;
+                    player.invulnerable = true;
+                    //Flash effect to show invulnerability
+                    this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
+                    this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
+                    //Set vulnerable
+                    this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
+                    //Spearman hit delay
+
                 }
-                player.invulnerable = true;
                 if(enemySpearman.x > player.x)
                 {
                     enemySpearman.anims.play('spearmanHitLeft',true); 
@@ -259,13 +268,8 @@ class level1 extends Phaser.Scene
                 {
                     enemySpearman.anims.play('spearmanHitRight', true);
                 }
-                this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
-                this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
-                this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
-                this.spearmanHitTimer = this.time.delayedCall(1000,spearmanHit,[enemySpearman], this);
-                // var playerInvulnerable;
                 
-                //  enemySpearman.hitting = false;   
+                this.spearmanHitTimer = this.time.delayedCall(1000,spearmanHit,[enemySpearman], this);
             }
         }
 
@@ -288,7 +292,6 @@ class level1 extends Phaser.Scene
 
         function spearmanActivated(enemySpearman)
         {
-            console.log(true);
             enemySpearman.anims.play('spearmanHitLeft');
         }
 
@@ -304,17 +307,15 @@ class level1 extends Phaser.Scene
         {
                 if(player.invulnerable === false)
                 {
-                    // player.setTint();
                     player.health--;
                 }
                 player.invulnerable = true;
-                //Call destruction of fireball
+                //Player flash effect
                 this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
-            this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});  
+                this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});  
                 this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
                 fireball.anims.play('fireballDestroyed', true);
                 //timer for destruction of fireball
-                var fireballTimedDestruction;
                 this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
         }
 
@@ -376,7 +377,6 @@ class level1 extends Phaser.Scene
                 fireball.anims.play('fireballDestroyed', true);
                 fireball.destroyed = 1;
                 //timer
-                var fireballTimedDestruction;
                 this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
             }
         }
@@ -402,6 +402,7 @@ class level1 extends Phaser.Scene
             spearman.hitting = false;
         }
 
+        //Spearman loses health
         function bulletHitSpearman (bullet, enemySpearman)
         {
             enemySpearman.health--;
@@ -557,12 +558,10 @@ class level1 extends Phaser.Scene
             if(spearman.x >= spearman.originXValue + 300)
             {
                 spearman.direction = "left";
-                // spearman.anims.play('spearmanLeft', true)
             }
             else if(spearman.x <=spearman.originXValue)
             {
                 spearman.direction= "right";
-                // spearman.anims.play('spearmanRight', true)
             }               
         }
 
@@ -585,13 +584,17 @@ class level1 extends Phaser.Scene
         {
             if(this.atBoss === 0)
             {
+                //Pause movement
                 this.physics.pause();
                 var time = 500;
+                //Make the wall built over time
                 for(var i = -14; i<=486; i+=100)
                 {
+                    //Create wall boundaries
                     this.createWalls = this.time.delayedCall(time,createWall,[i], this);
                     time += 500;
                 }
+                //Resume the physics after wall is build
                 this.resumePhysics = this.time.delayedCall(4000, resumePhysics,[], this);
             }
             this.atBoss = 1;
@@ -599,6 +602,7 @@ class level1 extends Phaser.Scene
 
         function createWall(i)
         {
+            //Wall both sides of the screen
             this.walls.create(2416,i, 'wall');
             this.walls.create(3184,i, 'wall');
         }
@@ -606,6 +610,7 @@ class level1 extends Phaser.Scene
         function resumePhysics()
         {
             this.physics.resume();
+            //Stop screen from following the player
             this.cameras.main.stopFollow();
         }
     }
