@@ -24,7 +24,6 @@ class level1 extends Phaser.Scene
             'assets/healthBar.png',
             {frameWidth: 81, frameHeight: 22}
         );
-        this.load.image('blank','assets/blankBox.png');
         this.load.spritesheet('fireball', 
         'assets/fireball.png',
             {frameWidth: 17, frameHeight: 17}   
@@ -232,24 +231,10 @@ class level1 extends Phaser.Scene
 
         //Healthbar
         this.health = this.physics.add.group();
-        this.healthBar = this.health.create(40,585,'blank').setScrollFactor(0);
+        this.healthBar = this.health.create(40,585,'').setScrollFactor(0);
         this.healthBar.anims.play('heartsThree');
         this.healthBar.setCollideWorldBounds(true);
-        //Score
-        // this.scoreBar = this.health.add.text(16,16, 'Score: 0', { fontSize: '32px', fill: '#000'});
-        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-        this.health.create(40,16,this.scoreText);
-        //Collider so healthbar doesn't go off screen
-        var blanks;
-        blanks = this.physics.add.staticGroup();
-        this.physics.add.collider(this.healthBar, blanks);
-        blanks.create(16,585,'blank');
-        blanks.create(2465, 585, 'blank');
-        
-        //Health count
-        // var healthCount = 3;
-        // this.healthCount = 3;
-
+ 
         //Adding spearman enemy
         this.enemySpearmans = this.physics.add.group({
             gravityY: 300,
