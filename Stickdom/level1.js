@@ -69,20 +69,31 @@ class level1 extends Phaser.Scene
         },this);
 
         //Create platforms
-        var platforms;
-        platforms = this.physics.add.staticGroup();
-        platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(1200, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(2000, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(2800, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(600, 400, 'ground');
-        platforms.create(50, 300, 'ground');
-        platforms.create(750, 220, 'ground');
+        this.platforms = this.physics.add.staticGroup();
+        createPlatform(400,568,this.platforms);
+        createPlatform(1200,568,this.platforms);
+        createPlatform(2000,568,this.platforms);
+        createPlatform(2800,568,this.platforms);
+        createPlatform(600,400,this.platforms);
+        createPlatform(50,300,this.platforms);
+        createPlatform(750,220,this.platforms);
+        createPlatform(1350,400,this.platforms);
+        createPlatform(1550,250,this.platforms);
+        createPlatform(2150,250,this.platforms);
+        createPlatform(1850,100,this.platforms);
 
-        platforms.create(1350, 400, 'ground');
-        platforms.create(1550, 250, 'ground'); 
-        platforms.create(2150, 250, 'ground');
-        platforms.create(1850, 100, 'ground');
+        function createPlatform(x,y, platforms)
+        {
+            if(y<568)
+            {
+                var platform = platforms.create(x,y,'ground');
+            }
+            else
+            {
+                var platform = platforms.create(x,y, 'ground').setScale(2).refreshBody();
+            }
+
+        }
 
         var bossPlatforms;
         bossPlatforms = this.physics.add.staticGroup();
@@ -93,7 +104,6 @@ class level1 extends Phaser.Scene
         // var walls;
         this.walls = this.physics.add.staticGroup();
         
-
         //Camera
         this.cameras.main.setBounds(0,0,3200,600);
         
@@ -106,8 +116,9 @@ class level1 extends Phaser.Scene
         this.player.direction = "left";
         this.player.invulnerable = false;
         this.player.health = 3;
+        this.player.isColliding = false;
         //Player collision with platform
-        this.physics.add.collider(this.player, platforms);
+        this.physics.add.collider(this.player, this.platforms);
         this.physics.add.collider(this.player, bossPlatforms);
         this.physics.add.collider(this.player, this.walls);
         //Camera follows player
@@ -221,7 +232,7 @@ class level1 extends Phaser.Scene
 
         //Healthbar
         this.health = this.physics.add.group();
-        this.healthBar = this.health.create(40,585,'blank');
+        this.healthBar = this.health.create(40,585,'blank').setScrollFactor(0);
         this.healthBar.anims.play('heartsThree');
         this.healthBar.setCollideWorldBounds(true);
         //Score
@@ -244,7 +255,7 @@ class level1 extends Phaser.Scene
             gravityY: 300,
         });
         this.physics.add.collider(this.player, this.enemySpearmans, spearmanHitPlayer, null, this);
-        this.physics.add.collider(this.enemySpearmans, platforms);
+        this.physics.add.collider(this.enemySpearmans, this.platforms);
 
         function spearmanHitPlayer (player, enemySpearman)
         {
@@ -299,7 +310,7 @@ class level1 extends Phaser.Scene
         var fireballs = this.physics.add.group({
             gravityY: 300,
         });
-        this.physics.add.collider(fireballs, platforms);
+        this.physics.add.collider(fireballs, this.platforms);
         this.physics.add.collider(this.player, fireballs, hitfireball, null, this);
 
         //Player hits fireball
@@ -335,7 +346,7 @@ class level1 extends Phaser.Scene
         });
         
         //Check star collision with ground
-        this.physics.add.collider(stars, platforms);   
+        this.physics.add.collider(stars, this.platforms);   
         //If player gets star
         this.physics.add.overlap(this.player, stars, collectStar, null, this);
         
@@ -366,7 +377,7 @@ class level1 extends Phaser.Scene
         //add bullets group
         this.bullets = this.physics.add.group();
         this.physics.add.collider(this.bullets, fireballs, bulletHit, null, this);
-        this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
+        this.physics.add.collider(this.bullets, this.platforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
         this.physics.add.collider(this.bullets, this.enemySpearmans, bulletHitSpearman, null, this);
 
@@ -437,7 +448,6 @@ class level1 extends Phaser.Scene
         if(this.key_Space.isDown)
         {
             this.player.setVelocityX(0);
-            this.healthBar.setVelocityX(0);
             if(this.player.direction=== "left")
             {
                 this.player.anims.play('shootLeft');
@@ -484,11 +494,7 @@ class level1 extends Phaser.Scene
         {  
             this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
-            this.player.direction = "left";
-            if(this.player.x>=395 && this.player.x < 2800)
-            {
-                this.healthBar.setVelocityX(-160);
-            }
+            this.player.direction = "left";        
         }
         //Moving right
         else if (this.key_Right.isDown)
@@ -496,16 +502,11 @@ class level1 extends Phaser.Scene
             this.player.setVelocityX(160);
             this.player.anims.play('right', true);
             this.player.direction = "right";
-            if(this.player.x>=395) 
-            {
-                this.healthBar.setVelocityX(160);
-            }
         }
         //Not moving
         else
         {
             this.player.setVelocityX(0);
-            this.healthBar.setVelocityX(0);
             if(this.player.direction === "left")
             {
                 this.player.anims.play('faceLeft');
@@ -569,7 +570,6 @@ class level1 extends Phaser.Scene
             }               
         }
 
-
         //RESET DEBUGGING USE ONLY
         this.key_R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         if (this.key_R._justUp)
@@ -578,7 +578,6 @@ class level1 extends Phaser.Scene
             // this.player.setTint();
             this.player.anims.play('turn');
             this.gameOver = false;
-            // this.healthCount = 3;
             this.player.health = 3;
             this.healthBar.anims.play('heartsThree');
             this.key_R._justUp = false;
@@ -599,6 +598,8 @@ class level1 extends Phaser.Scene
             }
             this.atBoss = 1;
         }
+
+        
 
         function createWall(i)
         {
