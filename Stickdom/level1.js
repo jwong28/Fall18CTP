@@ -92,9 +92,15 @@ class level1 extends Phaser.Scene
 
         var bossPlatforms;
         bossPlatforms = this.physics.add.staticGroup();
-        bossPlatforms.create(2525,400,'bossPlatform');
-        bossPlatforms.create(2800,250,'bossPlatform');
-        bossPlatforms.create(3075,350,'bossPlatform');
+        var bossPlatform = bossPlatforms.create(2525,400,'bossPlatform');
+        bossPlatform.body.checkCollision.down = false;
+        var bossPlatform = bossPlatforms.create(2800,250,'bossPlatform');
+        bossPlatform.body.checkCollision.down = false;
+
+        var bossPlatform = bossPlatforms.create(3075,400,'bossPlatform');
+        bossPlatform.body.checkCollision.down = false;
+
+        
 
         // var walls;
         this.walls = this.physics.add.staticGroup();
@@ -277,12 +283,16 @@ class level1 extends Phaser.Scene
         this.boss = this.physics.add.group({
             gravityY:300,
         });
-        var bossSpearman = this.boss.create(2800,400,'boss');
-        bossSpearman.anims.play('bossSummonRight',true);
+        var bossSpearman = this.boss.create(3120,16,'boss');
+        // bossSpearman.setVisible(false);
+        // console.log(bossSpearman);
+        bossSpearman.anims.play('bossFaceLeft');
+        // bossSpearman.body.setGravityY = 0;
         bossSpearman.setCollideWorldBounds(true);
         bossSpearman.activated= 0;
         bossSpearman.summon = 0;
         bossSpearman.direction = 'left';
+        bossSpearman.health = 50;
         // bossSpearman.setImmovable(true);
         bossSpearman.hitting = false;
         this.physics.add.collider(this.boss, platforms);
@@ -339,7 +349,7 @@ class level1 extends Phaser.Scene
         }
 
         //populating screen with spearman
-        for(var i=500; i<2400;i+=600)
+        for(var i=500; i<2100;i+=400)
         {
             createSpearman(i, this.player,this.enemySpearmans);
         }
@@ -370,14 +380,14 @@ class level1 extends Phaser.Scene
 
         function createSpearman(i, player,enemySpearmans)
         {
-            var enemySpearman = enemySpearmans.create(i,300, 'spearman');
+            var enemySpearman = enemySpearmans.create(i,500, 'spearman');
             enemySpearman.anims.play('spearmanLeft', true);
             enemySpearman.health = 2;
             enemySpearman.originXValue = i;
             enemySpearman.direction = "right";
             enemySpearman.hitting = false;
             enemySpearman.setCollideWorldBounds(true);
-            enemySpearman.body.setImmovable(true);
+            // enemySpearman.body.setImmovable(true);
         }
 
 
@@ -387,6 +397,7 @@ class level1 extends Phaser.Scene
         });
         this.physics.add.collider(this.fireballs, platforms);
         this.physics.add.collider(this.fireballs, this.walls);
+        // this.physics.add.collider(this.fireballs, bossPlatforms);
         this.physics.add.collider(this.player, this.fireballs, hitfireball, null, this);
 
         //Player hits fireball
@@ -454,6 +465,8 @@ class level1 extends Phaser.Scene
         this.bullets = this.physics.add.group();
         this.physics.add.collider(this.bullets, this.fireballs, bulletHit, null, this);
         this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
+        this.physics.add.collider(this.bullets, this.walls, bulletBounds, null, this);
+        this.physics.add.collider(this.bullets, bossPlatforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
         this.physics.add.collider(this.bullets, this.boss, bulletHitBoss, null, this);
         this.physics.add.collider(this.bullets, this.enemySpearmans, bulletHitSpearman, null, this);
@@ -491,6 +504,11 @@ class level1 extends Phaser.Scene
         function bulletHitBoss (bullet, boss)
         {
             bullet.disableBody(true,true);
+            boss.health --;
+            if(boss.health ===0)
+            {
+                boss.disableBody(true,true);
+            }
         }
         
         //Wait time for spearman to hit the player
@@ -594,8 +612,8 @@ class level1 extends Phaser.Scene
         //Moving right
         else if (this.key_Right.isDown)
         {
-            this.player.setVelocityX(500);
-            // this.player.setVelocityX(160);
+            // this.player.setVelocityX(500);
+            this.player.setVelocityX(160);
             this.player.anims.play('right', true);
             this.player.direction = "right";
             if(this.player.x>=395) 
@@ -713,7 +731,7 @@ class level1 extends Phaser.Scene
         {
             if(bossSpearman.summon === 0)
             {    
-                for(var i = 0; i< 5; i++)
+                for(var i = 0; i< 10; i++)
                 {
                     var x = (this.player.x < 3200) ? Phaser.Math.Between(2500, 3100) : Phaser.Math.Between(2500, 3100);
                     this.fireball = this.fireballs.create(x, 16, 'fireball');
@@ -747,10 +765,10 @@ class level1 extends Phaser.Scene
                     this.createWalls = this.time.delayedCall(time,createWall,[i], this);
                     time += 500;
                 }
-                this.resumePhysics = this.time.delayedCall(4000, resumePhysics,[], this);
+                // this.bossLanding = this.time.delayedCall(2400,bossLand, [bossSpearman],this);
+                this.resumePhysics = this.time.delayedCall(5000, resumePhysics,[], this);
             }
             this.atBoss = 1;
-            bossSpearman.activated=1;
         }
 
         function createWall(i)
@@ -763,6 +781,8 @@ class level1 extends Phaser.Scene
         {
             this.physics.resume();
             this.cameras.main.stopFollow();
+            bossSpearman.activated=1;
+
         }
 
         //RESET DEBUGGING USE ONLY
