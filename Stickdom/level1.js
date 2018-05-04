@@ -513,14 +513,14 @@ class level1 extends Phaser.Scene
         //Moving left
         else if (this.key_Left.isDown)
         {  
-            this.player.setVelocityX(-500);
+            this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
             this.player.direction = "left";        
         }
         //Moving right
         else if (this.key_Right.isDown)
         {
-            this.player.setVelocityX(500);
+            this.player.setVelocityX(160);
             this.player.anims.play('right', true);
             this.player.direction = "right";
         }
@@ -564,7 +564,6 @@ class level1 extends Phaser.Scene
         for(var i =0; i<this.enemySpearmans.children.size;i++)
         {
             var spearman = this.enemySpearmans.children.entries[i];
-
             var distance = spearman.distance;
             //Spearman paces back and forth
             if(spearman.hitting === true)
