@@ -99,18 +99,16 @@ class level1 extends Phaser.Scene
             }
 
         }
+        this.bossPlatforms = this.physics.add.staticGroup();
+        createBossPlatform(2525,400, this.bossPlatforms);
+        createBossPlatform(2800,250, this.bossPlatforms);
+        createBossPlatform(3075,400, this.bossPlatforms);
 
-        var bossPlatforms;
-        bossPlatforms = this.physics.add.staticGroup();
-        var bossPlatform = bossPlatforms.create(2525,400,'bossPlatform');
-        bossPlatform.body.checkCollision.down = false;
-        var bossPlatform = bossPlatforms.create(2800,250,'bossPlatform');
-        bossPlatform.body.checkCollision.down = false;
-
-        var bossPlatform = bossPlatforms.create(3075,400,'bossPlatform');
-        bossPlatform.body.checkCollision.down = false;
-
-        
+        function createBossPlatform(x,y, bossPlatforms)
+        {
+            var bossPlatform = bossPlatforms.create(x,y,'bossPlatform');
+            bossPlatform.body.checkCollision.down = false;
+        }
 
         // var walls;
         this.walls = this.physics.add.staticGroup();
@@ -130,7 +128,7 @@ class level1 extends Phaser.Scene
         this.player.isColliding = false;
         //Player collision with platform
         this.physics.add.collider(this.player, this.platforms);
-        this.physics.add.collider(this.player, bossPlatforms);
+        this.physics.add.collider(this.player, this.bossPlatforms);
         this.physics.add.collider(this.player, this.walls);
         //Camera follows player
         this.cameras.main.startFollow(this.player); 
@@ -484,7 +482,7 @@ class level1 extends Phaser.Scene
         this.physics.add.collider(this.bullets, this.fireballs, bulletHit, null, this);
         this.physics.add.collider(this.bullets, this.platforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets, this.walls, bulletBounds, null, this);
-        this.physics.add.collider(this.bullets, bossPlatforms, bulletBounds, null, this);
+        this.physics.add.collider(this.bullets, this.bossPlatforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
         this.physics.add.collider(this.bullets, this.boss, bulletHitBoss, null, this);
         this.physics.add.collider(this.bullets, this.enemySpearmans, bulletHitSpearman, null, this);
