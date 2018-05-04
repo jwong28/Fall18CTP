@@ -235,16 +235,10 @@ class level1 extends Phaser.Scene
         this.healthBar.anims.play('heartsThree');
         this.healthBar.setCollideWorldBounds(true);
 
-        //Collider so healthbar doesn't go off screen
-        this.physics.add.collider(this.healthBar, platforms);
-        platforms.create(16,16,'blank');
-        platforms.create(2465, 16, 'blank');
-        
         //Score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
         this.scoreText.setScrollFactor(0);
         var score = 0;
-        this.health.create(40,16,this.scoreText);
 
         //Adding spearman enemy
         this.enemySpearmans = this.physics.add.group({
@@ -286,12 +280,6 @@ class level1 extends Phaser.Scene
             }
         }
 
-        // populating screen with spearman
-        // for(var i=500; i<2000;i+=500)
-        // {
-        //     createSpearman(i, this.player,this.enemySpearmans);
-        // }
-
         function createSpearman(i, player,enemySpearmans)
         {
             var enemySpearman = enemySpearmans.create(i,500, 'spearman');
@@ -332,14 +320,33 @@ class level1 extends Phaser.Scene
             this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
         }
 
+
         //Creating group of stars
         var stars = this.physics.add.group({
-            key: 'star',
-            repeat: 33,
-            setXY: { x: 12, y: 0, stepX: 70 },
             gravityY: 300,
         });
-        stars.createMultiple({key: 'star', repeat: 10, setXY:{x: 400, y:300, stepX: 100 }, gravityY:300});
+        createStars();
+        function createStars()
+        {
+           
+            stars.createMultiple({key: 'star', repeat: 3, setXY:{x: 16, y:259, stepX: 70 }});
+            stars.createMultiple({key: 'star', repeat: 2, setXY:{x: 240, y:511, stepX: 70 }});
+            stars.createMultiple({key: 'star', repeat: 1, setXY:{x: 600, y:511, stepX: 70 }});
+            stars.createMultiple({key: 'star', repeat: 6, setXY:{x: 400, y:359, stepX: 65 }});
+            stars.createMultiple({key: 'star', repeat: 6, setXY:{x: 546, y:179, stepX: 65 }});
+            stars.createMultiple({key: 'star', repeat: 2, setXY:{x: 900, y:511, stepX: 70 }});
+            stars.createMultiple({key: 'star', repeat: 5, setXY:{x: 1151, y:359, stepX: 80 }});
+            stars.createMultiple({key: 'star', repeat: 15, setXY:{x: 1343, y:209, stepX: 68 }});
+            stars.createMultiple({key: 'star', repeat: 2, setXY:{x: 1400, y:511, stepX: 70 }});
+        }
+
+        // // populating screen with spearman
+        for(var i=500; i<2000;i+=500)
+        {
+            createSpearman(i, this.player,this.enemySpearmans);
+        }
+
+
 
         stars.children.iterate(function (child) {
 
@@ -368,10 +375,7 @@ class level1 extends Phaser.Scene
                 
             if (stars.countActive(true) === 0)
             {
-                stars.children.iterate(function (child) 
-                {
-                    child.enableBody(true, child.x, 0, true, true);
-                });
+                createStars();
 
             }
         }
@@ -494,21 +498,18 @@ class level1 extends Phaser.Scene
                 this.bulletNum = 1;
             }
             this.key_Space._justUp = false;
-            console.log(this.player.x+ ", "+ this.player .y);
         }
         //Moving left
         else if (this.key_Left.isDown)
         {              
-            this.player.setVelocityX(-500);
-            // this.player.setVelocityX(-160);
+            this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
             this.player.direction = "left";        
         }
         //Moving right
         else if (this.key_Right.isDown)
         {
-            this.player.setVelocityX(500);
-            // this.player.setVelocityX(160);
+            this.player.setVelocityX(160);
             this.player.anims.play('right', true);
             this.player.direction = "right";
         }
