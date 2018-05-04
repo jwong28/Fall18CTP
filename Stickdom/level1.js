@@ -47,7 +47,6 @@ class level1 extends Phaser.Scene
         this.add.image(1600,300,'background');
         //Setting world bounds
         this.physics.world.bounds.width = 3200;
-        // this.physics.world.bounds.height = 390;
         
         //bullet number for bullet checking
         var bulletNum=0;
