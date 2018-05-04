@@ -306,9 +306,6 @@ class level1 extends Phaser.Scene
 
         //Creating group of stars
         var stars = this.physics.add.group({
-            // key: 'star',
-            // repeat: 11,
-            // setXY: { x: 12, y: 0, stepX: 70 },
             gravityY: 300,
         });
 
@@ -318,7 +315,6 @@ class level1 extends Phaser.Scene
         });
         
         // populating screen with spearman
-        // for(var i=500; i<2000;i+=500)
         for(var i = 0; i< 2; i++)
         {
             createSpearman(Phaser.Math.Between(300, 1000), 500,this.enemySpearmans,Phaser.Math.Between(100,300),false);
