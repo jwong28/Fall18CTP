@@ -244,7 +244,7 @@ class level1 extends Phaser.Scene
         this.enemySpearmans = this.physics.add.group({
             gravityY: 300,
         });
-        // this.physics.add.collider(this.player, this.enemySpearmans, spearmanHitPlayer, null, this);
+        this.physics.add.collider(this.player, this.enemySpearmans, spearmanHitPlayer, null, this);
         this.physics.add.collider(this.enemySpearmans, this.platforms);
 
         function spearmanHitPlayer (player, enemySpearman)
