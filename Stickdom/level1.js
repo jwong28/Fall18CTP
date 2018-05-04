@@ -507,7 +507,6 @@ class level1 extends Phaser.Scene
                 this.bulletTwo.setGravityY(35);
                 this.bulletNum = 1;
             }
-            console.log(this.player.x + ", " + this.player.y);
             this.key_Space._justUp = false;
         }
         //Moving left
