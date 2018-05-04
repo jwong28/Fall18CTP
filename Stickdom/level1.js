@@ -302,7 +302,7 @@ class level1 extends Phaser.Scene
         bossSpearman.activated= 0;
         bossSpearman.summon = 0;
         bossSpearman.direction = 'left';
-        bossSpearman.health = 50;
+        bossSpearman.health = 30;
         // bossSpearman.setImmovable(true);
         bossSpearman.hitting = false;
         this.physics.add.collider(this.boss, this.platforms);
@@ -317,16 +317,11 @@ class level1 extends Phaser.Scene
         this.healthBar.anims.play('heartsThree');
         this.healthBar.setCollideWorldBounds(true);
 
-        //Collider so healthbar doesn't go off screen
-        this.physics.add.collider(this.healthBar, platforms);
-        platforms.create(16,16,'blank');
-        platforms.create(2465, 16, 'blank');
         
         //Score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
         this.scoreText.setScrollFactor(0);
         var score = 0;
-        this.health.create(40,16,this.scoreText);
 
         //Adding spearman enemy
         this.enemySpearmans = this.physics.add.group({
@@ -747,7 +742,7 @@ class level1 extends Phaser.Scene
         {
             if(bossSpearman.summon === 0)
             {    
-                for(var i = 0; i< 10; i++)
+                for(var i = 0; i< 7; i++)
                 {
                     var x = (this.player.x < 3200) ? Phaser.Math.Between(2500, 3100) : Phaser.Math.Between(2500, 3100);
                     this.fireball = this.fireballs.create(x, 16, 'fireball');
