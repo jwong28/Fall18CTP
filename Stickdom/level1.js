@@ -24,7 +24,6 @@ class level1 extends Phaser.Scene
             'assets/healthBar.png',
             {frameWidth: 81, frameHeight: 22}
         );
-        this.load.image('blank','assets/blankBox.png');
         this.load.spritesheet('fireball', 
         'assets/fireball.png',
             {frameWidth: 17, frameHeight: 17}   
@@ -75,20 +74,31 @@ class level1 extends Phaser.Scene
         },this);
 
         //Create platforms
-        var platforms;
-        platforms = this.physics.add.staticGroup();
-        platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(1200, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(2000, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(2800, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(600, 400, 'ground');
-        platforms.create(50, 300, 'ground');
-        platforms.create(750, 220, 'ground');
+        this.platforms = this.physics.add.staticGroup();
+        createPlatform(400,568,this.platforms);
+        createPlatform(1200,568,this.platforms);
+        createPlatform(2000,568,this.platforms);
+        createPlatform(2800,568,this.platforms);
+        createPlatform(600,400,this.platforms);
+        createPlatform(50,300,this.platforms);
+        createPlatform(750,220,this.platforms);
+        createPlatform(1350,400,this.platforms);
+        createPlatform(1550,250,this.platforms);
+        createPlatform(2150,250,this.platforms);
+        createPlatform(1850,100,this.platforms);
 
-        platforms.create(1350, 400, 'ground');
-        platforms.create(1550, 250, 'ground'); 
-        platforms.create(2150, 250, 'ground');
-        platforms.create(1850, 100, 'ground');
+        function createPlatform(x,y, platforms)
+        {
+            if(y<568)
+            {
+                var platform = platforms.create(x,y,'ground');
+            }
+            else
+            {
+                var platform = platforms.create(x,y, 'ground').setScale(2).refreshBody();
+            }
+
+        }
 
         var bossPlatforms;
         bossPlatforms = this.physics.add.staticGroup();
@@ -105,7 +115,6 @@ class level1 extends Phaser.Scene
         // var walls;
         this.walls = this.physics.add.staticGroup();
         
-
         //Camera
         this.cameras.main.setBounds(0,0,3200,600);
         
@@ -118,8 +127,9 @@ class level1 extends Phaser.Scene
         this.player.direction = "left";
         this.player.invulnerable = false;
         this.player.health = 3;
+        this.player.isColliding = false;
         //Player collision with platform
-        this.physics.add.collider(this.player, platforms);
+        this.physics.add.collider(this.player, this.platforms);
         this.physics.add.collider(this.player, bossPlatforms);
         this.physics.add.collider(this.player, this.walls);
         //Camera follows player
@@ -295,7 +305,7 @@ class level1 extends Phaser.Scene
         bossSpearman.health = 50;
         // bossSpearman.setImmovable(true);
         bossSpearman.hitting = false;
-        this.physics.add.collider(this.boss, platforms);
+        this.physics.add.collider(this.boss, this.platforms);
         this.physics.add.collider(this.boss, this.walls);
         this.physics.add.collider(this.player, this.boss, bossHitPlayer, null, this);
 
@@ -303,49 +313,48 @@ class level1 extends Phaser.Scene
 
         //Healthbar
         this.health = this.physics.add.group();
-        this.healthBar = this.health.create(40,16,'blank');
+        this.healthBar = this.health.create(40,585,'').setScrollFactor(0);
         this.healthBar.anims.play('heartsThree');
         this.healthBar.setCollideWorldBounds(true);
-        //Collider so healthbar doesn't go off screen
-        this.physics.add.collider(this.healthBar, platforms);
-        platforms.create(16,16,'blank');
-        platforms.create(2465, 16, 'blank');
-        
-        //Health count
-        // var healthCount = 3;
-        // this.healthCount = 3;
-
+ 
         //Adding spearman enemy
         this.enemySpearmans = this.physics.add.group({
             gravityY: 300,
         });
         this.physics.add.collider(this.player, this.enemySpearmans, spearmanHitPlayer, null, this);
-        this.physics.add.collider(this.enemySpearmans, platforms);
+        this.physics.add.collider(this.enemySpearmans, this.platforms);
 
         function spearmanHitPlayer (player, enemySpearman)
         {
-            enemySpearman.hitting = true;
-            if(player.invulnerable === false)
+            //If player is in front or behind the spearman
+            if(enemySpearman.y- player.y < 49)
             {
-                player.health--;
-                // player.setTint();
+                //Spearman is hitting
+                enemySpearman.hitting = true;
+                //If player hasn't been hit already
+                if(player.invulnerable === false)
+                {
+                    player.health--;
+                    player.invulnerable = true;
+                    //Flash effect to show invulnerability
+                    this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
+                    this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
+                    //Set vulnerable
+                    this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
+                    //Spearman hit delay
+
+                }
+                if(enemySpearman.x > player.x)
+                {
+                    enemySpearman.anims.play('spearmanHitLeft',true); 
+                }
+                else
+                {
+                    enemySpearman.anims.play('spearmanHitRight', true);
+                }
+                
+                this.spearmanHitTimer = this.time.delayedCall(1000,spearmanHit,[enemySpearman], this);
             }
-            player.invulnerable = true;
-            if(enemySpearman.x > player.x)
-            {
-                enemySpearman.anims.play('spearmanHitLeft',true); 
-            }
-            else
-            {
-                enemySpearman.anims.play('spearmanHitRight', true);
-            }
-            var spearmanHitTimer;
-            this.spearmanHitTimer = this.time.delayedCall(1000,spearmanHit,[enemySpearman], this);
-            // var playerInvulnerable;
-            this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
-            this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
-            this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
-            //  enemySpearman.hitting = false;   
         }
 
         //populating screen with spearman
@@ -390,12 +399,16 @@ class level1 extends Phaser.Scene
             // enemySpearman.body.setImmovable(true);
         }
 
+        function spearmanActivated(enemySpearman)
+        {
+            enemySpearman.anims.play('spearmanHitLeft');
+        }
 
         //adding enemies
         this.fireballs = this.physics.add.group({
             gravityY: 300,
         });
-        this.physics.add.collider(this.fireballs, platforms);
+        this.physics.add.collider(this.fireballs, this.platforms);
         this.physics.add.collider(this.fireballs, this.walls);
         // this.physics.add.collider(this.fireballs, bossPlatforms);
         this.physics.add.collider(this.player, this.fireballs, hitfireball, null, this);
@@ -403,20 +416,18 @@ class level1 extends Phaser.Scene
         //Player hits fireball
         function hitfireball (player, fireball)
         {
-                if(player.invulnerable === false)
-                {
-                    // player.setTint();
-                    player.health--;
-                }
+            if(player.invulnerable === false)
+            {
+                player.health--;
                 player.invulnerable = true;
-                //Call destruction of fireball
+                //Player flash effect
                 this.playerInvisibleTimer = this.time.addEvent({ delay: 100, callback: playerInvisible, callbackScope: this, repeat: 10});
                 this.playerVisibleTimer = this.time.addEvent({ delay: 200, callback: playerVisible, callbackScope: this, repeat: 10});
                 this.playerInvulnerabletimer = this.time.delayedCall(2000,playerInvulnerable,[player],this);
-                fireball.anims.play('fireballDestroyed', true);
-                //timer for destruction of fireball
-                var fireballTimedDestruction;
-                this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
+            }
+            fireball.anims.play('fireballDestroyed', true);
+            //timer for destruction of fireball
+            this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
         }
 
         //Creating group of stars
@@ -433,7 +444,7 @@ class level1 extends Phaser.Scene
         });
         
         //Check star collision with ground
-        this.physics.add.collider(stars, platforms);   
+        this.physics.add.collider(stars, this.platforms);   
         //If player gets star
         this.physics.add.overlap(this.player, stars, collectStar, null, this);
         
@@ -452,10 +463,9 @@ class level1 extends Phaser.Scene
                 
             if (stars.countActive(true) === 0)
             {
-                stars.children.iterate(function (child) {
-
+                stars.children.iterate(function (child) 
+                {
                     child.enableBody(true, child.x, 0, true, true);
-
                 });
 
             }
@@ -464,7 +474,7 @@ class level1 extends Phaser.Scene
         //add bullets group
         this.bullets = this.physics.add.group();
         this.physics.add.collider(this.bullets, this.fireballs, bulletHit, null, this);
-        this.physics.add.collider(this.bullets, platforms, bulletBounds, null, this);
+        this.physics.add.collider(this.bullets, this.platforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets, this.walls, bulletBounds, null, this);
         this.physics.add.collider(this.bullets, bossPlatforms, bulletBounds, null, this);
         this.physics.add.collider(this.bullets,this.bullets, bulletTouchingBullet, null, this);
@@ -480,7 +490,6 @@ class level1 extends Phaser.Scene
                 fireball.anims.play('fireballDestroyed', true);
                 fireball.destroyed = 1;
                 //timer
-                var fireballTimedDestruction;
                 this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
             }
         }
@@ -520,10 +529,10 @@ class level1 extends Phaser.Scene
         function bossHit(bossSpearman)
         {
             bossSpearman.hitting = false;
-            // bossSpearman.setImmovable(false);
 
         }
 
+        //Spearman loses health
         function bulletHitSpearman (bullet, enemySpearman)
         {
             enemySpearman.health--;
@@ -556,7 +565,6 @@ class level1 extends Phaser.Scene
         if(this.key_Space.isDown)
         {
             this.player.setVelocityX(0);
-            this.healthBar.setVelocityX(0);
             if(this.player.direction=== "left")
             {
                 this.player.anims.play('shootLeft');
@@ -603,11 +611,7 @@ class level1 extends Phaser.Scene
         {  
             this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
-            this.player.direction = "left";
-            if(this.player.x>=395 && this.player.x < 2800)
-            {
-                this.healthBar.setVelocityX(-160);
-            }
+            this.player.direction = "left";        
         }
         //Moving right
         else if (this.key_Right.isDown)
@@ -616,16 +620,11 @@ class level1 extends Phaser.Scene
             this.player.setVelocityX(160);
             this.player.anims.play('right', true);
             this.player.direction = "right";
-            if(this.player.x>=395) 
-            {
-                this.healthBar.setVelocityX(160);
-            }
         }
         //Not moving
         else
         {
             this.player.setVelocityX(0);
-            this.healthBar.setVelocityX(0);
             if(this.player.direction === "left")
             {
                 this.player.anims.play('faceLeft');
@@ -758,21 +757,27 @@ class level1 extends Phaser.Scene
         {
             if(this.atBoss === 0)
             {
+                //Pause movement
                 this.physics.pause();
                 var time = 500;
+                //Make the wall built over time
                 for(var i = -14; i<=486; i+=100)
                 {
+                    //Create wall boundaries
                     this.createWalls = this.time.delayedCall(time,createWall,[i], this);
                     time += 500;
                 }
-                // this.bossLanding = this.time.delayedCall(2400,bossLand, [bossSpearman],this);
-                this.resumePhysics = this.time.delayedCall(5000, resumePhysics,[], this);
+                //Resume the physics after wall is build
+                this.resumePhysics = this.time.delayedCall(4000, resumePhysics,[], this);
             }
             this.atBoss = 1;
         }
 
+        
+
         function createWall(i)
         {
+            //Wall both sides of the screen
             this.walls.create(2416,i, 'wall');
             this.walls.create(3184,i, 'wall');
         }
@@ -780,6 +785,7 @@ class level1 extends Phaser.Scene
         function resumePhysics()
         {
             this.physics.resume();
+            //Stop screen from following the player
             this.cameras.main.stopFollow();
             bossSpearman.activated=1;
 
