@@ -280,22 +280,6 @@ class level1 extends Phaser.Scene
             }
         }
 
-        function createSpearman(i, player,enemySpearmans)
-        {
-            var enemySpearman = enemySpearmans.create(i,500, 'spearman');
-            enemySpearman.anims.play('spearmanLeft', true);
-            enemySpearman.health = 2;
-            enemySpearman.originXValue = i;
-            enemySpearman.direction = "right";
-            enemySpearman.hitting = false;
-            enemySpearman.setCollideWorldBounds(true);
-        }
-
-        function spearmanActivated(enemySpearman)
-        {
-            enemySpearman.anims.play('spearmanHitLeft');
-        }
-
         //adding enemies
         var fireballs = this.physics.add.group({
             gravityY: 300,
@@ -353,6 +337,52 @@ class level1 extends Phaser.Scene
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         });
         
+        // populating screen with spearman
+        for(var i = 0; i< 2; i++)
+        {
+            createSpearman(Phaser.Math.Between(300, 1000), 500,this.enemySpearmans,Phaser.Math.Between(100,300),false);
+            createSpearman(Phaser.Math.Between(800, 2000), 500,this.enemySpearmans,Phaser.Math.Between(100,300),false);
+            createSpearman(Phaser.Math.Between(1500, 2100), 500,this.enemySpearmans,Phaser.Math.Between(100,300),false);
+            createSpearman(Phaser.Math.Between(650,750),179,this.enemySpearmans,Phaser.Math.Between(100,200), true);
+            createSpearman(Phaser.Math.Between(1250,1400),359,this.enemySpearmans,Phaser.Math.Between(100,150), true);
+            createSpearman(Phaser.Math.Between(1750,1950),59,this.enemySpearmans,Phaser.Math.Between(50,110), true);
+            createSpearman(1850,59,this.enemySpearmans,Phaser.Math.Between(150,200), true);
+            createSpearman(Phaser.Math.Between(2100,2200),209,this.enemySpearmans,Phaser.Math.Between(100,150),true);
+
+        }
+        createSpearman(2100, 500,this.enemySpearmans,Phaser.Math.Between(100,300),false);
+        createSpearman(124,259,this.enemySpearmans, 100, true);
+        createSpearman(515,359,this.enemySpearmans, 115, true);
+        createSpearman(600,359,this.enemySpearmans, 200, true);
+        createSpearman(750,179,this.enemySpearmans,200, true);
+        createSpearman(1550,209,this.enemySpearmans,200, true);
+        createSpearman(2150,209,this.enemySpearmans,200, true);
+
+        function createSpearman(x, y,enemySpearmans,distance, platform)
+        {
+            var enemySpearman = enemySpearmans.create(x,y, 'spearman');
+            enemySpearman.anims.play('spearmanLeft', true);
+            enemySpearman.health = 2;
+            //If spearman is on platform or ground
+            if(platform === true)
+            {
+                enemySpearman.originXValue = x;
+            }
+            else
+            {
+                enemySpearman.originXValue = x+ Phaser.Math.Between(-100,100);
+            }
+            enemySpearman.direction = "right";
+            enemySpearman.hitting = false;
+            enemySpearman.distance = distance;
+            enemySpearman.setCollideWorldBounds(true);
+        }
+
+        function spearmanActivated(enemySpearman)
+        {
+            enemySpearman.anims.play('spearmanHitLeft');
+        }
+
         //Check star collision with ground
         this.physics.add.collider(stars, this.platforms);   
         //If player gets star
@@ -553,26 +583,27 @@ class level1 extends Phaser.Scene
         for(var i =0; i<this.enemySpearmans.children.size;i++)
         {
             var spearman = this.enemySpearmans.children.entries[i];
+            var distance = spearman.distance;
             //Spearman paces back and forth
             if(spearman.hitting === true)
             {
                 spearman.setVelocityX(0);
             }
-            else if(spearman.x < spearman.originXValue+300 && spearman.direction==="right")
+            else if(spearman.x < spearman.originXValue+distance && spearman.direction==="right")
             {
                 spearman.setVelocityX(100);
                 spearman.anims.play('spearmanRight', true)
             }
-            else if(spearman.x > spearman.originXValue && spearman.direction ==="left")
+            else if(spearman.x > spearman.originXValue- distance && spearman.direction ==="left")
             {
                 spearman.setVelocityX(-100);
                 spearman.anims.play('spearmanLeft', true)
             }
-            if(spearman.x >= spearman.originXValue + 300)
+            if(spearman.x >= spearman.originXValue + distance)
             {
                 spearman.direction = "left";
             }
-            else if(spearman.x <=spearman.originXValue)
+            else if(spearman.x <=spearman.originXValue-distance)
             {
                 spearman.direction= "right";
             }               
