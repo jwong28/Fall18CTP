@@ -234,7 +234,7 @@ class level1 extends Phaser.Scene
         this.healthBar = this.health.create(40,585,'').setScrollFactor(0);
         this.healthBar.anims.play('heartsThree');
         this.healthBar.setCollideWorldBounds(true);
-        
+
         //Score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
         this.scoreText.setScrollFactor(0);
@@ -304,10 +304,33 @@ class level1 extends Phaser.Scene
             this.fireballTimedDestruction = this.time.delayedCall(200,fireballDestruction,[fireball], this);
         }
 
+
         //Creating group of stars
         var stars = this.physics.add.group({
             gravityY: 300,
         });
+        createStars();
+        function createStars()
+        {
+           
+            stars.createMultiple({key: 'star', repeat: 3, setXY:{x: 16, y:259, stepX: 70 }});
+            stars.createMultiple({key: 'star', repeat: 2, setXY:{x: 240, y:511, stepX: 70 }});
+            stars.createMultiple({key: 'star', repeat: 1, setXY:{x: 600, y:511, stepX: 70 }});
+            stars.createMultiple({key: 'star', repeat: 6, setXY:{x: 400, y:359, stepX: 65 }});
+            stars.createMultiple({key: 'star', repeat: 6, setXY:{x: 546, y:179, stepX: 65 }});
+            stars.createMultiple({key: 'star', repeat: 2, setXY:{x: 900, y:511, stepX: 70 }});
+            stars.createMultiple({key: 'star', repeat: 5, setXY:{x: 1151, y:359, stepX: 80 }});
+            stars.createMultiple({key: 'star', repeat: 15, setXY:{x: 1343, y:209, stepX: 68 }});
+            stars.createMultiple({key: 'star', repeat: 2, setXY:{x: 1400, y:511, stepX: 70 }});
+        }
+
+        // // populating screen with spearman
+        for(var i=500; i<2000;i+=500)
+        {
+            createSpearman(i, this.player,this.enemySpearmans);
+        }
+
+
 
         stars.children.iterate(function (child) {
 
@@ -371,7 +394,7 @@ class level1 extends Phaser.Scene
             score += 10;
             this.scoreText.setText('Score: ' + score);
             star.disableBody(true, true);
-            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+            var x = (player.x < 2400) ? Phaser.Math.Between(player.x-200, player.x+200) : Phaser.Math.Between(player.x-200, player.x+200);
             var fireball = fireballs.create(x, 16, 'fireball');
             fireball.destroyed = 0;
             fireball.anims.play('fireballMovement', true);
@@ -382,10 +405,7 @@ class level1 extends Phaser.Scene
                 
             if (stars.countActive(true) === 0)
             {
-                stars.children.iterate(function (child) 
-                {
-                    child.enableBody(true, child.x, 0, true, true);
-                });
+                createStars();
 
             }
         }
@@ -511,7 +531,7 @@ class level1 extends Phaser.Scene
         }
         //Moving left
         else if (this.key_Left.isDown)
-        {  
+        {              
             this.player.setVelocityX(-160);
             this.player.anims.play('left', true);
             this.player.direction = "left";        
