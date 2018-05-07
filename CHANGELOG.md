@@ -26,3 +26,10 @@
 	- Spearman animations added
 	- Spearman paces back and forth from origin point
 	- Spearman colliders added
+- 4/28/2018: Added platforms for a boss battle
+- 4/30/2018: Added walls for boss battle
+- 5/1/2018: Spearman now hits player when colliding
+	- Player has invulnerability after getting hit
+- 5/4/2018: Scorebar added
+	- Healthbar now follows camera
+	- Player doesn't get hurt if on top of spearman
